@@ -5,6 +5,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Uzytkownik;
+import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
 // import Twojego repozytorium i encji
 
 @Component
@@ -25,7 +26,7 @@ public class AdminInitializer implements CommandLineRunner {
             Uzytkownik admin = new Uzytkownik();
             admin.setName(adminUsername);
             admin.setHaslo(passwordEncoder.encode("Lucy")); // Ustaw silne hasło!
-            admin.setRola("ADMIN");
+            admin.setRola(RolaEnum.ADMIN);
             magazynUzytkownika.save(admin);
             System.out.println("Utworzono konto administratora.");
         }

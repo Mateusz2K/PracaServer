@@ -13,30 +13,34 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import zarzadzanieFinansami.DTO.JwtResponseDTO;
-import zarzadzanieFinansami.DTO.LoginRequestDTO;
+import zarzadzanieFinansami.DTO.logowanie.JwtResponseDTO;
+import zarzadzanieFinansami.DTO.logowanie.LoginRequestDTO;
 import zarzadzanieFinansami.JWT.JwtUtil; // Upewnij się, że ścieżka do JwtUtil jest poprawna
 
 @RestController
 @RequestMapping("/api/auth") // Wspólny prefix dla endpointów autentykacji
 public class AutoryzacjaKontroler {
 
-    @Autowired
-    AuthenticationManager authenticationManager; // Wstrzyknij AuthenticationManager
+    AuthenticationManager authenticationManager;
 
-    @Autowired
-    JwtUtil jwtUtil; // Wstrzyknij swój JwtUtil
+    JwtUtil jwtUtil;
 
-    // Możesz również wstrzyknąć UserDetailsService, jeśli potrzebujesz dodatkowych informacji o użytkowniku
+    // wstrzyknąć UserDetailsService, jeśli potrzebuje dodatkowych informacji o użytkowniku
     // @Autowired
     // UserDetailsService userDetailsService;
+
+    @Autowired
+    public AutoryzacjaKontroler(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+        this.authenticationManager = authenticationManager;
+        this.jwtUtil = jwtUtil;
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
-        // Uwierzytelnij użytkownika za pomocą emaila i hasła
+        // Uwierzytelnij użytkownika za pomocą nazwy i hasła
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getNazwa(), loginRequest.getPassword()));
+                new UsernamePasswordAuthenticationToken(loginRequest.getNazwa(), loginRequest.getHasło()));
 
         // Jeśli uwierzytelnienie się powiodło, ustaw je w kontekście bezpieczeństwa
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -44,16 +48,16 @@ public class AutoryzacjaKontroler {
         // Wygeneruj token JWT
         String jwt = jwtUtil.generateJwtToken(authentication);
 
-        // Pobierz szczegóły użytkownika (w Twoim przypadku UserDetails.getUsername() zwraca email)
+        // Pobierz szczegóły użytkownika
          UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-         String email = userDetails.getUsername();
+         String username = userDetails.getUsername();
          // Prostszy sposób, jeśli UserDetails.getUsername() to email
 
         // Zwróć token w odpowiedzi
-        return ResponseEntity.ok(new JwtResponseDTO(jwt, email));
+        return ResponseEntity.ok(new JwtResponseDTO(jwt, username));
     }
 
-    // Możesz tu dodać inne endpointy, np. /register, /refresh-token itp.
-    // Pamiętaj, że endpoint /register (jeśli go masz) również powinien być publicznie dostępny
+    // dodać inne endpointy, np. /register, /refresh-token itp.
+    //  endpoint /register (jeśli go masz) również powinien być publicznie dostępny
     // w konfiguracji Spring Security.
 }

@@ -20,7 +20,7 @@ public class SzczegolyUzytkownika implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         // Pobierz rolę z obiektu Uzytkownik
-        String rola = uzytkownik.getRola();
+        String rola = uzytkownik.getRola().name();
 
         // Sprawdzenie, czy rola nie jest pusta (dobra praktyka)
         if (rola == null || rola.trim().isEmpty()) {

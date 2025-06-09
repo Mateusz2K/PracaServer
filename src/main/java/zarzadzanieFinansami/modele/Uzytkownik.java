@@ -1,8 +1,10 @@
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
 
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Uzytkownik{
@@ -18,8 +20,9 @@ public class Uzytkownik{
     private String haslo;
     @Column(nullable = false)
     private boolean aktywny;
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String rola;
+    private RolaEnum rola;
     @Column(nullable = false)
     private int błędneLogowanie = 0;
 
@@ -43,11 +46,11 @@ public class Uzytkownik{
         aktywny = true;//TODO:tworzenie potwierdzenia przez email o aktywacji konta
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -66,11 +69,11 @@ public class Uzytkownik{
     public void setEmail(String email) {
         this.email = email;
     }
-    public String getRola() {
+    public RolaEnum getRola() {
         return rola;
     }
 
-    public void setRola(String rola) {
+    public void setRola(RolaEnum rola) {
         this.rola = rola;
     }
 
@@ -122,5 +125,25 @@ public class Uzytkownik{
     public void resetBłędneLogowanie(){
         this.błędneLogowanie = 0;
     }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) { // Sprawdzenie, czy to ten sam obiekt w pamięci
+            return true;
+        }
+        // Sprawdzenie, czy 'o' jest instancją Uzytkownik (lub jego podklasy/proxy Hibernate)
+        // oraz czy 'o' nie jest null. 'null instanceof X' jest zawsze false.
+        if (!(o instanceof Uzytkownik that)) {
+            return false;
+        }
+        // Rzutowanie jest bezpieczne po sprawdzeniu instanceof
+
+        // Jeśli 'id' tej instancji jest null, to obiekt nie został jeszcze utrwalony
+        // lub nie ma przypisanego ID. W takim przypadku, zgodnie z tą implementacją,
+        // może być równy tylko samemu sobie (co zostało sprawdzone na początku).
+        // Jeśli 'id' jest nie-null, tożsamość jest oparta na wartości 'id'.
+        // Porównujemy 'id' tej instancji z 'id' obiektu 'that'.
+        return this.id != null && Objects.equals(this.id, that.id);
+    }
+
 
 }

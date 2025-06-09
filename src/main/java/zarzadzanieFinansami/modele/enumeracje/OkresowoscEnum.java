@@ -1,5 +1,5 @@
 package zarzadzanieFinansami.modele.enumeracje;
 
 public enum OkresowoscEnum {
-    DZIEŃ, TYDZIEŃ, MIESIĄC
+    DZIEŃ, TYDZIEŃ, MIESIĄC, ROK
 }

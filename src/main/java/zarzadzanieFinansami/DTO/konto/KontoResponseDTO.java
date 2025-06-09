@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.DTO;//package zarzadzanieFinansami.DTO;
+package zarzadzanieFinansami.DTO.konto;//package zarzadzanieFinansami.DTO;
 //
 //
 //import zarzadzanieFinansami.modele.*;
@@ -30,10 +30,17 @@ public class KontoResponseDTO {
 
     // Gettery (Settery zazwyczaj nie są potrzebne dla DTO odpowiedzi)
     public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
     public String getNazwa() { return nazwa; }
+    public void setNazwa(String nazwa) { this.nazwa = nazwa; }
     public BigDecimal getBilans() { return bilans; }
+    public void setBilans(BigDecimal bilans) { this.bilans = bilans; }
     public String getTyp() { return typ; }
+    public void setTyp(String typ) { this.typ = typ; }
     public String getWaluta() { return waluta; }
+    public void setWaluta(String waluta) { this.waluta = waluta; }
     public LocalDateTime getDataUtworzenia() { return dataUtworzenia; }
+    public void setDataUtworzenia(LocalDateTime dataUtworzenia) { this.dataUtworzenia = dataUtworzenia; }
     public Integer getUzytkownikId() { return uzytkownikId; }
+    public void setUzytkownikId(Integer uzytkownikId) { this.uzytkownikId = uzytkownikId; }
 }

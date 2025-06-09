@@ -6,7 +6,7 @@ import zarzadzanieFinansami.modele.enumeracje.OkresowoscEnum;
 import java.math.BigDecimal;
 
 @Entity
-@Table(name = "zasadyOszczedzania")
+@Table(name = "zasady_oszczedzania")
 public class ZasadyOszczedzania {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

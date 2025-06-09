@@ -1,9 +1,11 @@
+// src/main/java/zarzadzanieFinansami/modele/Cel.java
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.CelStatusEnum;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate; // Zmieniono z LocalDateTime na LocalDate dla daty rozpoczęcia i zakończenia
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,67 +14,62 @@ import java.util.List;
 public class Cel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO) // Sugeruję GenerationType.IDENTITY dla autoinkrementacji przez bazę
     @Column(name = "id", nullable = false)
-    private Integer id;
-    @Column(name = "nazwa",nullable = false)
-    private String nazwa;
-    @Column(name = "okreslonaKwota",nullable = false, precision = 15, scale = 2)
-    private BigDecimal okreslonaKwota;
-    @Column( name = "zebranaKwota",precision = 15, scale = 2)
-    private BigDecimal zebranaKwota = BigDecimal.ZERO;
-    @Column(nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime termin;
+    private Integer id; // Zmieniono na Long, co jest częstszą praktyką dla ID
 
+    @Column(name = "nazwa_celu", nullable = false, length = 100) // Dodano length, warto ujednolicić nazewnictwo
+    private String nazwaCelu; // Zmieniono z "nazwa" dla spójności z DTO
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "kwota_docelowa", nullable = false, precision = 15, scale = 2)
+    private BigDecimal kwotaDocelowa; // Zmieniono z "okreslonaKwota"
+
+    @Column(name = "aktualna_kwota", precision = 15, scale = 2)
+    private BigDecimal aktualnaKwota = BigDecimal.ZERO; // Zmieniono z "zebranaKwota" i zainicjowano
+
+    @Column(name = "data_rozpoczecia", nullable = false)
+    private LocalDate dataRozpoczecia; // NOWE POLE
+
+    @Column(name = "data_zakonczenia") // Było "termin" typu LocalDateTime, zmieniono na LocalDate
+    private LocalDate dataZakonczenia;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private CelStatusEnum status = CelStatusEnum.AKTYWNY;
+
+    @Column(name = "opis", length = 500) // Dodano length
+    private String opis; // NOWE POLE
+
+    @ManyToOne(fetch = FetchType.LAZY) // Zmieniono na LAZY, EAGER było przy koncie
     @JoinColumn(name = "konto_id", nullable = false)
     private Konto konto;
 
-    //połączenie raportów oszczedności
+    @ManyToOne(fetch = FetchType.LAZY) // Dodano relację do użytkownika
+    @JoinColumn(name = "uzytkownik_id", nullable = false)
+    private Uzytkownik uzytkownik;
+
+
+    // Relacje (pozostawiam jak były, ale warto przemyśleć CascadeTypes)
     @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
     private List<RaportOszczednosci> raportyOszczednosci = new ArrayList<>();
-    //połaczenie zasad Oszcedzania bez usuwanych rekordów
+
     @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
     private List<ZasadyOszczedzania> zasadyOszczedzania = new ArrayList<>();
-    //połaczenie zasad Powiadomien
+
     @OneToMany(mappedBy = "cel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ZasadyPowiadomien> zasadyPowiadomien = new ArrayList<>();
+
+    // Dodajemy pustą listę dla transakcji, jeśli chcemy je tu mapować
+    // @OneToMany(mappedBy = "cel", cascade = CascadeType.ALL, orphanRemoval = true)
+    // private List<Transakcja> transakcje = new ArrayList<>();
+
 
     // Konstruktor domyślny
     public Cel() {
     }
 
-    // Konstruktor z parametrami
-    public Cel(Integer id, String nazwa, BigDecimal okreslonaKwota, BigDecimal zebranaKwota, LocalDateTime termin, Konto konto) {
-        this.id = id;
-        this.nazwa = nazwa;
-        this.okreslonaKwota = okreslonaKwota;
-        this.zebranaKwota = zebranaKwota;
-        this.termin = termin;
-        this.konto = konto;
-    }
+    // Gettery i Settery (dla nowych i zmodyfikowanych pól)
 
-    public Cel(String nazwa, BigDecimal okreslonaKwota, BigDecimal zebranaKwota, LocalDateTime termin, Konto konto, List<RaportOszczednosci> raportyOszczednosci, List<ZasadyOszczedzania> zasadyOszczedzania, List<ZasadyPowiadomien> zasadyPowiadomien) {
-        this.nazwa = nazwa;
-        this.okreslonaKwota = okreslonaKwota;
-        this.zebranaKwota = zebranaKwota;
-        this.termin = termin;
-        this.konto = konto;
-        this.raportyOszczednosci = raportyOszczednosci;
-        this.zasadyOszczedzania = zasadyOszczedzania;
-        this.zasadyPowiadomien = zasadyPowiadomien;
-    }
-
-    public Cel(String nazwa, BigDecimal okreslonaKwota, BigDecimal zebranaKwota, LocalDateTime termin, Konto konto) {
-        this.nazwa = nazwa;
-        this.okreslonaKwota = okreslonaKwota;
-        this.zebranaKwota = zebranaKwota;
-        this.termin = termin;
-        this.konto = konto;
-    }
-
-    // Gettery i Settery
     public Integer getId() {
         return id;
     }
@@ -81,36 +78,52 @@ public class Cel {
         this.id = id;
     }
 
-    public String getNazwa() {
-        return nazwa;
+    public String getNazwaCelu() {
+        return nazwaCelu;
     }
 
-    public void setNazwa(String nazwa) {
-        this.nazwa = nazwa;
+    public void setNazwaCelu(String nazwaCelu) {
+        this.nazwaCelu = nazwaCelu;
     }
 
-    public BigDecimal getOkreslonaKwota() {
-        return okreslonaKwota;
+    public BigDecimal getKwotaDocelowa() {
+        return kwotaDocelowa;
     }
 
-    public void setOkreslonaKwota(BigDecimal okreslonaKwota) {
-        this.okreslonaKwota = okreslonaKwota;
+    public void setKwotaDocelowa(BigDecimal kwotaDocelowa) {
+        this.kwotaDocelowa = kwotaDocelowa;
     }
 
-    public BigDecimal getZebranaKwota() {
-        return zebranaKwota;
+    public BigDecimal getAktualnaKwota() {
+        return aktualnaKwota;
     }
 
-    public void setZebranaKwota(BigDecimal zebranaKwota) {
-        this.zebranaKwota = zebranaKwota;
+    public void setAktualnaKwota(BigDecimal aktualnaKwota) {
+        this.aktualnaKwota = aktualnaKwota;
     }
 
-    public LocalDateTime getTermin() {
-        return termin;
+    public LocalDate getDataRozpoczecia() {
+        return dataRozpoczecia;
     }
 
-    public void setTermin(LocalDateTime termin) {
-        this.termin = termin;
+    public void setDataRozpoczecia(LocalDate dataRozpoczecia) {
+        this.dataRozpoczecia = dataRozpoczecia;
+    }
+
+    public LocalDate getDataZakonczenia() {
+        return dataZakonczenia;
+    }
+
+    public void setDataZakonczenia(LocalDate dataZakonczenia) {
+        this.dataZakonczenia = dataZakonczenia;
+    }
+
+    public String getOpis() {
+        return opis;
+    }
+
+    public void setOpis(String opis) {
+        this.opis = opis;
     }
 
     public Konto getKonto() {
@@ -121,7 +134,23 @@ public class Cel {
         this.konto = konto;
     }
 
-    public List<RaportOszczednosci> getRaportyOszczednosci() {
+    public Uzytkownik getUzytkownik() {
+        return uzytkownik;
+    }
+
+    public void setUzytkownik(Uzytkownik uzytkownik) {
+        this.uzytkownik = uzytkownik;
+    }
+    public CelStatusEnum getStatus() {
+        return status;
+    }
+    public void setStatus(CelStatusEnum status) {
+        this.status = status;
+    }
+    public
+
+
+     List<RaportOszczednosci> getRaportyOszczednosci() {
         return raportyOszczednosci;
     }
 

@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.DTO;
+package zarzadzanieFinansami.DTO.logowanie;
 
 public class JwtResponseDTO {
     private String token;

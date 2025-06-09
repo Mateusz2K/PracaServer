@@ -1,8 +1,4 @@
-package zarzadzanieFinansami.DTO;
-
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+package zarzadzanieFinansami.DTO.logowanie;
 
 public class UzytkownikResponseDTO {
         private Integer id;

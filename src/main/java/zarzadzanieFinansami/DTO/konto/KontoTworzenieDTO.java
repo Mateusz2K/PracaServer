@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.DTO;
+package zarzadzanieFinansami.DTO.konto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -18,16 +18,16 @@ public class KontoTworzenieDTO {
         @NotNull(message = "Waluta nie może być pusta")
         private String waluta; // Np. "PLN", "USD" - odpowiadające Twoim enumom
 
-        private BigDecimal bilansPoczatkowy;// Opcjonalny
+        private BigDecimal bilans;// Opcjonalny
 
         public KontoTworzenieDTO() {
         }
 
-        public KontoTworzenieDTO(String nazwa, String typ, String waluta, BigDecimal bilansPoczatkowy) {
+        public KontoTworzenieDTO(String nazwa, String typ, String waluta, BigDecimal bilans) {
                 this.nazwa = nazwa;
                 this.typ = typ;
                 this.waluta = waluta;
-                this.bilansPoczatkowy = bilansPoczatkowy;
+                this.bilans = bilans;
         }
 
         // Gettery i Settery
@@ -37,7 +37,7 @@ public class KontoTworzenieDTO {
         public void setTyp(String typ) { this.typ = typ; }
         public String getWaluta() { return waluta; }
         public void setWaluta(String waluta) { this.waluta = waluta; }
-        public BigDecimal getBilansPoczatkowy() { return bilansPoczatkowy; }
-        public void setBilansPoczatkowy(BigDecimal bilansPoczatkowy) { this.bilansPoczatkowy = bilansPoczatkowy; }
+        public BigDecimal getBilans() { return bilans; }
+        public void setBilans(BigDecimal bilans) { this.bilans = bilans; }
 }
 

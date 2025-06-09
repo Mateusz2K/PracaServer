@@ -1,6 +1,5 @@
-package zarzadzanieFinansami.DTO;
+package zarzadzanieFinansami.DTO.logowanie;
 
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
 public class LoginRequestDTO {
@@ -8,7 +7,7 @@ public class LoginRequestDTO {
     @NotBlank(message = "Nazwa nie może być pusta")
     private String nazwa;
     @NotBlank(message = "Hasło nie może być puste")
-    private String password;
+    private String hasło;
 
     // Gettery
 
@@ -17,14 +16,14 @@ public class LoginRequestDTO {
     }
 
 
-    public String getPassword() {
-        return password;
+    public String getHasło() {
+        return hasło;
     }
 
     // Settery (opcjonalne, jeśli używasz konstruktora lub deserializacji przez framework)
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setHasło(String password) {
+        this.hasło = password;
     }
     public void setNazwa(String nazwa) {
         this.nazwa = nazwa;

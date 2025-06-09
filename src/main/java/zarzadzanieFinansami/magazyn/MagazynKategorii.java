@@ -2,6 +2,7 @@ package zarzadzanieFinansami.magazyn;
 
 import zarzadzanieFinansami.modele.Kategoria;
 import org.springframework.data.jpa.repository.JpaRepository;
+import zarzadzanieFinansami.modele.Uzytkownik;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,4 +34,17 @@ public interface MagazynKategorii extends JpaRepository<Kategoria, Integer> {
 
     Optional<Kategoria> findByNazwa(String nazwa);
     Optional<Kategoria> findByTypTransakcji(String typTransakcji);
+    // Znajdź kategorię po nazwie DLA KONKRETNEGO UŻYTKOWNIKA
+    Optional<Kategoria> findByUzytkownikAndNazwa(Uzytkownik uzytkownik, String nazwa); // <-- DODAJ
+
+    // Znajdź kategorię po ID DLA KONKRETNEGO UŻYTKOWNIKA
+    Optional<Kategoria> findByUzytkownikAndId(Uzytkownik uzytkownik, Integer id); // <-- DODAJ
+
+    // Znajdź wszystkie kategorie DLA KONKRETNEGO UŻYTKOWNIKA
+    List<Kategoria> findByUzytkownik(Uzytkownik uzytkownik); // <-- DODAJ
+
+    // Możesz też potrzebować znaleźć po typie transakcji dla użytkownika
+    List<Kategoria> findByUzytkownikAndTypTransakcji(Uzytkownik uzytkownik, String typTransakcji); // <-- DODAJ (opcjonalne)
+
+
 }

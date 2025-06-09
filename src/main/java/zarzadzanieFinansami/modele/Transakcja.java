@@ -23,10 +23,10 @@ public class Transakcja {
     private LocalDate data;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "kategoria", nullable = false) // poprawiona literówka
+    @JoinColumn(name = "kategoria_id", nullable = false) // poprawiona literówka
     private Kategoria kategoria;
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "konto", nullable = false) // poprawiona literówka
+    @JoinColumn(name = "konto_id", nullable = false) // poprawiona literówka
     private Konto konto;
 
     //historie Kont połączenie forgein

@@ -1,7 +1,7 @@
 package zarzadzanieFinansami.Kontrolery;
 
 // import zarzadzanieFinansami.DTO.UzytkownikDTO; // Ten import jest teraz problemem
-import zarzadzanieFinansami.DTO.UzytkownikResponseDTO;
+import zarzadzanieFinansami.DTO.logowanie.UzytkownikResponseDTO;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,12 +18,12 @@ import java.util.stream.Collectors; // Potrzebne do mapowania na DTO
 
 @RestController
 @RequestMapping("/api")
-@PreAuthorize("hasRole('ADMIN')") // Domyślnie wszystkie metody wymagają roli ADMIN (chyba że nadpisane) - dobrze
+@PreAuthorize("hasRole('ADMIN')") // Domyślnie wszystkie metody wymagają roli ADMIN
 public class KontrolerUzytkownik {
 
     private final UzytkownikUsluga uzytkownikUsluga;
 
-    @Autowired // Opcjonalne, ale OK
+    @Autowired
     public KontrolerUzytkownik(UzytkownikUsluga uzytkownikUsluga){
         this.uzytkownikUsluga = uzytkownikUsluga;
     }
@@ -33,8 +33,7 @@ public class KontrolerUzytkownik {
     // UWAGA: Pozwolenie USER na dostęp do dowolnego ID może być ryzykowne.
     // Rozważ dodanie logiki sprawdzającej, czy USER żąda własnych danych.
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    // @ResponseStatus(HttpStatus.OK) // Zbędne dla GET
-    // WAŻNE: Nigdy nie zwracaj całej encji Uzytkownik, zwłaszcza z hasłem! Użyj DTO.
+    //  Nigdy nie zwracaj całej encji Uzytkownik
     public ResponseEntity<?> getUzytkownikPrzezId(@PathVariable("id") Integer id){ // Zmieniono typ ID na Integer
         // TODO: Dodać logikę sprawdzającą uprawnienia dla roli USER
         // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -59,8 +58,8 @@ public class KontrolerUzytkownik {
 
     // --- Endpoint POST /uzytkownik ---
     @PostMapping("/uzytkownik")
-    @ResponseStatus(HttpStatus.CREATED) // Lepiej użyć ResponseEntity.created()
-    @PreAuthorize("hasRole('ADMIN')") // Dziedziczone z klasy, ale można zostawić dla jasności
+    @ResponseStatus(HttpStatus.CREATED)
+    @PreAuthorize("hasRole('ADMIN')") // Dziedziczone z klasy, ale można zostawić
     // Zmieniono parametry na @RequestParam, co jest OK dla prostych danych
     public ResponseEntity<?> stworzUzytkownika(@RequestParam String nazwa, @RequestParam String email, @RequestParam String password){
         try {
@@ -80,8 +79,7 @@ public class KontrolerUzytkownik {
     // --- Endpoint GET /uzytkownik ---
     @GetMapping("/uzytkownik")
     // @PreAuthorize("hasRole('ADMIN')") // Dziedziczone z klasy
-    // @ResponseStatus(HttpStatus.OK) // Zbędne
-    // WAŻNE: Nigdy nie zwracaj listy pełnych encji Uzytkownik! Użyj DTO.
+
     public ResponseEntity<List<UzytkownikResponseDTO>> znajdzUzytkownikow(){
         List<Uzytkownik> uzytkownicy = uzytkownikUsluga.znajdzWszystkichUzytkownikow();
         // Zmapuj listę encji na listę DTO
@@ -93,23 +91,22 @@ public class KontrolerUzytkownik {
 
     // --- Endpoint DELETE /uzytkownik/{id} ---
     @DeleteMapping("/uzytkownik/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) // 202 nie jest tu najlepsze, preferowane 204 lub 200
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasRole('ADMIN')") // Dziedziczone
-    public ResponseEntity<Void> usunUzytkownika(@PathVariable Integer id){ // Zmieniono typ ID na Long
+    public ResponseEntity<Void> usunUzytkownika(@PathVariable Integer id){
         try {
             uzytkownikUsluga.usunUzytkownika(id);
             return ResponseEntity.noContent().build(); // 204 No Content - standard dla udanego DELETE bez zwracania treści
-        } catch (jakarta.persistence.EntityNotFoundException e) { // Lub odpowiedni wyjątek z serwisu
+        } catch (jakarta.persistence.EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
     }
 
     // --- Endpoint PUT /uzytkownik/{id} ---
     @PutMapping("/uzytkownik/{id}")
-    // @ResponseStatus(HttpStatus.ACCEPTED) // Preferowane 200 OK (ze zwróconym zasobem) lub 204 No Content
     @PreAuthorize("hasRole('ADMIN')") // Dziedziczone
     // Zmieniono @RequestBody Uzytkownik na @RequestParam zgodnie z nowym serwisem
-    public ResponseEntity<?> wymienUzytkownika(@PathVariable Integer id, // Zmieniono typ ID na Long
+    public ResponseEntity<?> wymienUzytkownika(@PathVariable Integer id,
                                                @RequestParam String nowaNazwa,
                                                @RequestParam String nowyEmail,
                                                @RequestParam(required = false) String noweHaslo) { // Hasło opcjonalne
@@ -134,7 +131,7 @@ public class KontrolerUzytkownik {
                 uzytkownik.getId(),
                 uzytkownik.getName(),
                 uzytkownik.getEmail(),
-                uzytkownik.getRola()
+                uzytkownik.getRola().name()
         );
     }
 

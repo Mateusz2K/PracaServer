@@ -22,7 +22,7 @@ public class HistoriaKonta {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "konto_id")
     private Konto konto;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "transakcja_id")
     private Transakcja transakcja;
 

@@ -1,5 +1,6 @@
 package zarzadzanieFinansami.magazyn;
 
+import org.springframework.data.jpa.repository.EntityGraph;
 import zarzadzanieFinansami.modele.Konto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import zarzadzanieFinansami.modele.Uzytkownik;
@@ -25,7 +26,7 @@ public interface MagazynKonta extends JpaRepository<Konto, Integer> {
 
     @Override
     boolean existsById(Integer integer);
-
+    @EntityGraph(attributePaths = {"uzytkownik"}) // Określa, które relacje mają być pobrane EAGERLY
     @Override
     Optional<Konto> findById(Integer integer);
 
@@ -34,6 +35,8 @@ public interface MagazynKonta extends JpaRepository<Konto, Integer> {
     List<Konto> findByNazwa(String nazwa);
 
     List<Konto> findByUzytkownik(Uzytkownik nazwaUzytkownika);
+
+    boolean findByUzytkownikAndId(Uzytkownik currentUser, Integer kontoId);
 //    Optional<Konto> findByUzytkownik(Uzytkownik uzytkownik);
 //    Optional<Konto> findKontoByCele(List<Cel> cele);
 //    Optional<Konto> findKontoByZasadyOszczedzaniaNadawcaIsLike();

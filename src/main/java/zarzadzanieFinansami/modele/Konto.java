@@ -22,7 +22,7 @@ public class Konto {
     private BigDecimal bilans;
     @Convert(converter = TypKontaConverter.class)
     @Column(nullable = false, name = "typ")
-    @Enumerated(EnumType.STRING) // Przechowywanie wartości jako tekst w bazie
+//    @Enumerated(EnumType.STRING) // Przechowywanie wartości jako tekst w bazie
     private TypKontaEnum typ;
     @Column(nullable = false, name = "waluta")
     @Enumerated(EnumType.STRING) // Przechowywanie wartości jako tekst w bazie
@@ -130,12 +130,6 @@ public class Konto {
         return dataUtworzenia;
     }
 
-    public void setDataUtworzenia() {
-        if(dataUtworzenia == null) {
-            this.dataUtworzenia = LocalDateTime.now();
-        }
-
-    }
 
     public List<Cel> getCele() {
         return cele;
@@ -191,5 +185,20 @@ public class Konto {
 
     public void setHistorieKont(List<HistoriaKonta> historieKont) {
         this.historieKont = historieKont;
+    }
+
+    @Override
+    public String toString() {
+        return "Konto{" +
+                "id=" + id +
+                ", nazwa='" + nazwa + '\'' +
+                ", bilans=" + bilans +
+                ", typ=" + (typ != null ? typ.name() : "null") + // Bezpieczne dla null
+                ", waluta=" + (waluta != null ? waluta.name() : "null") + // Bezpieczne dla null
+                ", dataUtworzenia=" + dataUtworzenia +
+                ", uzytkownikId=" + (uzytkownik != null ? uzytkownik.getId() : "null") + // Loguj ID użytkownika, aby uniknąć problemów z toString() użytkownika
+                // Możesz dodać więcej pól, jeśli potrzebujesz, np. liczbę transakcji
+                // ", liczbaTransakcji=" + (transakcje != null ? transakcje.size() : 0) +
+                '}';
     }
 }

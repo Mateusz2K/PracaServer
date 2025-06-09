@@ -22,13 +22,17 @@ public class Kategoria {
     //połaczzenie rejestrów
     @OneToMany(mappedBy = "kategoria", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
     private List<Rejestr> rejestry;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "uzytkownik_id", nullable = false)
+    private Uzytkownik uzytkownik;
 
     public Kategoria() {
     }
 
-    public Kategoria(String nazwa, TypTransakcjiEnum typTransakcji) {
+    public Kategoria(String nazwa, TypTransakcjiEnum typTransakcji, Uzytkownik uzytkownik) {
         this.nazwa = nazwa;
         this.typTransakcji = typTransakcji;
+        this.uzytkownik = uzytkownik;
     }
 
     public int getId() {
@@ -69,5 +73,12 @@ public class Kategoria {
 
     public void setRejestry(List<Rejestr> rejestry) {
         this.rejestry = rejestry;
+    }
+    public Uzytkownik getUzytkownik() { // <-- GETTER DLA UŻYTKOWNIKA
+        return uzytkownik;
+    }
+
+    public void setUzytkownik(Uzytkownik uzytkownik) { // <-- SETTER DLA UŻYTKOWNIKA
+        this.uzytkownik = uzytkownik;
     }
 }

@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
-@Table(name = "typPowiadomienia")
+@Table(name = "typ_powiadomienia")
 public class TypPowiadomienia {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

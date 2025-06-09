@@ -9,6 +9,7 @@ import zarzadzanieFinansami.magazyn.MagazynUzytkownikaDodatek;
 import zarzadzanieFinansami.modele.Uzytkownik;
 // Usunięto import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Niepotrzebny, używamy wstrzykniętego interfejsu
 import org.springframework.stereotype.Service;
+import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
 
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +38,7 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
         if (nazwa == null || nazwa.isEmpty() ||
                 email == null || email.isEmpty() ||
                 suroweHaslo == null || suroweHaslo.isEmpty()) {
-            throw new IllegalArgumentException("Nazwa, email i hasło nie mogą być puste.");
+            throw new IllegalArgumentException("Nazwa, email lub hasło nie mogą być puste.");
         }
         // Można dodać sprawdzenie, czy email już istnieje
         if (existsByEmail(email)) {
@@ -49,14 +50,12 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
         uzytkownik.setName(nazwa);
         uzytkownik.setEmail(email);
         uzytkownik.setHaslo(passwordEncoder.encode(suroweHaslo)); // Kodowanie hasła
-        uzytkownik.setRola("USER"); // Ustawienie domyślnej roli
+        uzytkownik.setRola(RolaEnum.USER); // Ustawienie domyślnej roli
 
         // Zapisanie użytkownika i zwrócenie zapisanej encji
         return magazynUzytkownika.save(uzytkownik);
         // Nie zwracamy już DTO, a zwłaszcza nie zwracamy hasła!
     }
-
-    // Usunięto prywatną metodę sprawdzUzytkownika, walidacja jest teraz w metodach publicznych
 
     /**
      * Usuwa użytkownika o podanym ID.
