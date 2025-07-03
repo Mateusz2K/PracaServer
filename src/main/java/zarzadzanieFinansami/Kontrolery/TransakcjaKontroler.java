@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import zarzadzanieFinansami.DTO.transakcja.TransakcjaPobieranieDTO; // Nowe DTO
-import zarzadzanieFinansami.DTO.transakcja.TransakcjaResponseDTO;
+import zarzadzanieFinansami.DTO.transakcja.TransakcjaOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.transakcja.TransakcjaTworzenieDTO;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Transakcja;
@@ -32,9 +32,9 @@ public class TransakcjaKontroler {
         this.magazynUzytkownika = magazynUzytkownika;
     }
 
-    private TransakcjaResponseDTO mapToDto(Transakcja transakcja) {
+    private TransakcjaOdpowiedzDTO mapToDto(Transakcja transakcja) {
         if (transakcja == null) return null;
-        return new TransakcjaResponseDTO(
+        return new TransakcjaOdpowiedzDTO(
                 transakcja.getId(),
                 transakcja.getOpis(),
                 transakcja.getKwota(),
@@ -87,7 +87,7 @@ public class TransakcjaKontroler {
                     currentUser
             );
 
-            List<TransakcjaResponseDTO> dtos = transakcje.stream()
+            List<TransakcjaOdpowiedzDTO> dtos = transakcje.stream()
                     .map(this::mapToDto)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(dtos);

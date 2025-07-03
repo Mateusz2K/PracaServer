@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Size;
 
 import java.math.BigDecimal;
 
-public class KontoTworzenieDTO {
+public class KontoWysylanieDTO {
 
         @NotBlank(message = "Nazwa konta nie może być pusta")
         @Size(min = 3, max = 100, message = "Nazwa konta musi mieć od 3 do 100 znaków")
@@ -20,10 +20,10 @@ public class KontoTworzenieDTO {
 
         private BigDecimal bilans;// Opcjonalny
 
-        public KontoTworzenieDTO() {
+        public KontoWysylanieDTO() {
         }
 
-        public KontoTworzenieDTO(String nazwa, String typ, String waluta, BigDecimal bilans) {
+        public KontoWysylanieDTO(String nazwa, String typ, String waluta, BigDecimal bilans) {
                 this.nazwa = nazwa;
                 this.typ = typ;
                 this.waluta = waluta;

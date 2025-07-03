@@ -6,7 +6,7 @@ import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class TransakcjaResponseDTO {
+public class TransakcjaOdpowiedzDTO {
     private int id;
     private String opis;
     private BigDecimal kwota;
@@ -18,7 +18,7 @@ public class TransakcjaResponseDTO {
     private Integer kontoId;
 
     // Konstruktor, Gettery, Settery
-    public TransakcjaResponseDTO(int id, String opis, BigDecimal kwota, TypTransakcjiEnum typ, LocalDate data, Integer kategoriaId, String kategoriaNazwa, Integer kontoId) {
+    public TransakcjaOdpowiedzDTO(int id, String opis, BigDecimal kwota, TypTransakcjiEnum typ, LocalDate data, Integer kategoriaId, String kategoriaNazwa, Integer kontoId) {
         this.id = id;
         this.opis = opis;
         this.kwota = kwota;
@@ -29,7 +29,7 @@ public class TransakcjaResponseDTO {
         this.kontoId = kontoId;
     }
 
-    public TransakcjaResponseDTO() {} // Dla Jacksona
+    public TransakcjaOdpowiedzDTO() {} // Dla Jacksona
 
     // Gettery i Settery
     public int getId() { return id; }

@@ -8,7 +8,7 @@ package zarzadzanieFinansami.DTO.konto;//package zarzadzanieFinansami.DTO;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-public class KontoResponseDTO {
+public class KontoOdpowiedzDTO {
     private int id;
     private String nazwa;
     private BigDecimal bilans;
@@ -18,7 +18,7 @@ public class KontoResponseDTO {
     private Integer uzytkownikId; // Tylko ID właściciela
 
     // Konstruktor
-    public KontoResponseDTO(int id, String nazwa, BigDecimal bilans, String typ, String waluta, LocalDateTime dataUtworzenia, Integer uzytkownikId) {
+    public KontoOdpowiedzDTO(int id, String nazwa, BigDecimal bilans, String typ, String waluta, LocalDateTime dataUtworzenia, Integer uzytkownikId) {
         this.id = id;
         this.nazwa = nazwa;
         this.bilans = bilans;

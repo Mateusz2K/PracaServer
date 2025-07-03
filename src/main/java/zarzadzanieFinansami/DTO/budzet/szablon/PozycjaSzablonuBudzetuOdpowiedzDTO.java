@@ -5,7 +5,7 @@ package zarzadzanieFinansami.DTO.budzet.szablon;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
 import java.math.BigDecimal;
 
-public class PozycjaSzablonuBudzetuResponseDTO {
+public class PozycjaSzablonuBudzetuOdpowiedzDTO {
     private Long id;
     private Integer kategoriaId;
     private String kategoriaNazwa; // Jeśli kategoriaId jest ustawione
@@ -15,7 +15,7 @@ public class PozycjaSzablonuBudzetuResponseDTO {
     private BigDecimal kwotaAlokowana;
 
     // Konstruktor, Gettery i Settery
-    public PozycjaSzablonuBudzetuResponseDTO(Long id, Integer kategoriaId, String kategoriaNazwa, String metaKategoriaNazwa, TypAlokacjiEnum typAlokacji, BigDecimal procentAlokowany, BigDecimal kwotaAlokowana) {
+    public PozycjaSzablonuBudzetuOdpowiedzDTO(Long id, Integer kategoriaId, String kategoriaNazwa, String metaKategoriaNazwa, TypAlokacjiEnum typAlokacji, BigDecimal procentAlokowany, BigDecimal kwotaAlokowana) {
         this.id = id;
         this.kategoriaId = kategoriaId;
         this.kategoriaNazwa = kategoriaNazwa;

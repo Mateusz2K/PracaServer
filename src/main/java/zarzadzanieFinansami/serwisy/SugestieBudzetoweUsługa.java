@@ -3,8 +3,8 @@ package zarzadzanieFinansami.serwisy;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import zarzadzanieFinansami.DTO.budzet.BudzetRequestDTO;
-import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuRequestDTO;
+import zarzadzanieFinansami.DTO.budzet.BudzetWysylanieDTO;
+import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuWysylanieDTO;
 import zarzadzanieFinansami.magazyn.MagazynKategorii;
 import zarzadzanieFinansami.magazyn.MagazynTransakcji;
 import zarzadzanieFinansami.modele.Kategoria;
@@ -74,31 +74,31 @@ public class SugestieBudzetoweUsługa {
     }
 
     // Metoda do generowania propozycji budżetu (DTO)
-    public BudzetRequestDTO generujPropozycjeBudzetu(Uzytkownik uzytkownik, LocalDate dataAnalizyOd, LocalDate dataAnalizyDo, BigDecimal aktualnyPrzewidywanyDochod, TypAlokacjiEnum typAlokacji) {
+    public BudzetWysylanieDTO generujPropozycjeBudzetu(Uzytkownik uzytkownik, LocalDate dataAnalizyOd, LocalDate dataAnalizyDo, BigDecimal aktualnyPrzewidywanyDochod, TypAlokacjiEnum typAlokacji) {
         Map<Kategoria, BigDecimal> srednieWydatkiNaKategorie = obliczSrednieMiesieczneWydatkiNaKategorie(uzytkownik, dataAnalizyOd, dataAnalizyDo);
         BigDecimal srednieDochodyHistoryczne = obliczSrednieMiesieczneDochody(uzytkownik, dataAnalizyOd, dataAnalizyDo);
 
-        BudzetRequestDTO propozycja = new BudzetRequestDTO();
+        BudzetWysylanieDTO propozycja = new BudzetWysylanieDTO();
         // Ustaw przewidywany dochód (może być podany przez użytkownika lub historyczny)
         BigDecimal dochodDoBudzetowania = (aktualnyPrzewidywanyDochod != null && aktualnyPrzewidywanyDochod.compareTo(BigDecimal.ZERO) > 0)
                 ? aktualnyPrzewidywanyDochod : srednieDochodyHistoryczne;
         propozycja.setPrzewidywanyDochod(dochodDoBudzetowania);
 
 
-        List<PozycjaBudzetuRequestDTO> pozycjePropozycji = new ArrayList<>();
+        List<PozycjaBudzetuWysylanieDTO> pozycjePropozycji = new ArrayList<>();
         for (Map.Entry<Kategoria, BigDecimal> entry : srednieWydatkiNaKategorie.entrySet()) {
-            PozycjaBudzetuRequestDTO pozycja = getPozycjaBudzetuRequestDTO(aktualnyPrzewidywanyDochod, typAlokacji,  entry, srednieDochodyHistoryczne);
+            PozycjaBudzetuWysylanieDTO pozycja = getPozycjaBudzetuRequestDTO(aktualnyPrzewidywanyDochod, typAlokacji,  entry, srednieDochodyHistoryczne);
             pozycjePropozycji.add(pozycja);
         }
         propozycja.setPozycjeBudzetu(pozycjePropozycji);
         return propozycja;
     }
 
-    private static @NotNull PozycjaBudzetuRequestDTO getPozycjaBudzetuRequestDTO(BigDecimal aktualnyPrzewidywanyDochod, TypAlokacjiEnum typAlokacji, Map.Entry<Kategoria, BigDecimal> entry, BigDecimal srednieDochodyHistoryczne) {
+    private static @NotNull PozycjaBudzetuWysylanieDTO getPozycjaBudzetuRequestDTO(BigDecimal aktualnyPrzewidywanyDochod, TypAlokacjiEnum typAlokacji, Map.Entry<Kategoria, BigDecimal> entry, BigDecimal srednieDochodyHistoryczne) {
         Kategoria kategoria = entry.getKey();
         BigDecimal sredniWydatek = entry.getValue();
 
-        PozycjaBudzetuRequestDTO pozycja = new PozycjaBudzetuRequestDTO();
+        PozycjaBudzetuWysylanieDTO pozycja = new PozycjaBudzetuWysylanieDTO();
         pozycja.setKategoriaId(kategoria.getId());
 
 

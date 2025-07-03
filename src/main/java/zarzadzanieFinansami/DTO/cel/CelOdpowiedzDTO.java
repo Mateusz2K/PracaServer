@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class CelResponseDTO {
+public class CelOdpowiedzDTO {
     private Integer id;
     private String nazwaCelu;
     private BigDecimal kwotaDocelowa;
@@ -18,8 +18,8 @@ public class CelResponseDTO {
     private Integer uzytkownikId;
     private double procentOsiagniety;// Dodatkowe pola dla wygody
 
-    public CelResponseDTO(Integer id, String nazwaCelu, BigDecimal kwotaDocelowa, BigDecimal aktualnaKwota,
-                          LocalDate dataRozpoczecia, LocalDate dataZakonczenia, String opis, Integer uzytkownikId) {
+    public CelOdpowiedzDTO(Integer id, String nazwaCelu, BigDecimal kwotaDocelowa, BigDecimal aktualnaKwota,
+                           LocalDate dataRozpoczecia, LocalDate dataZakonczenia, String opis, Integer uzytkownikId) {
         this.id = id;
         this.nazwaCelu = nazwaCelu;
         this.kwotaDocelowa = kwotaDocelowa;

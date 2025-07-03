@@ -10,6 +10,7 @@ import zarzadzanieFinansami.modele.Uzytkownik;
 // Usunięto import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Niepotrzebny, używamy wstrzykniętego interfejsu
 import org.springframework.stereotype.Service;
 import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
+import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +40,14 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
                 email == null || email.isEmpty() ||
                 suroweHaslo == null || suroweHaslo.isEmpty()) {
             throw new IllegalArgumentException("Nazwa, email lub hasło nie mogą być puste.");
+            // Sprawdzenie, czy nazwa użytkownika jest już zajęta
+        }
+        if (magazynUzytkownika.existsByNazwa(nazwa)) {
+            throw new IllegalArgumentException("Nazwa użytkownika '" + nazwa + "' jest już zajęta.");
+        }
+        // Sprawdzenie, czy email jest już zajęty
+        if (magazynUzytkownika.existsByEmail(email)) {
+            throw new IllegalArgumentException("Adres email '" + email + "' jest już zarejestrowany.");
         }
         // Można dodać sprawdzenie, czy email już istnieje
         if (existsByEmail(email)) {
@@ -100,11 +109,9 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
     @Transactional(readOnly = true) // Tylko odczyt
     public boolean checkPassword(String email, String suroweHaslo) {
         Optional<Uzytkownik> uzytkownikOpt = magazynUzytkownika.findByEmail(email);
-        if (uzytkownikOpt.isPresent()) {
-            // Porównuje surowe hasło z zakodowanym hasłem z bazy
-            return passwordEncoder.matches(suroweHaslo, uzytkownikOpt.get().getHaslo());
-        }
-        return false; // Użytkownik nie istnieje
+        // Użytkownik nie istnieje
+        // Porównuje surowe hasło z zakodowanym hasłem z bazy
+        return uzytkownikOpt.filter(uzytkownik -> passwordEncoder.matches(suroweHaslo, uzytkownik.getHaslo())).isPresent();
     }
 
     /**
@@ -116,7 +123,7 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
     @Transactional(readOnly = true)
     public boolean existsByEmail(String email) {
         // existsByEmail może być dedykowaną metodą w repozytorium dla wydajności
-        return magazynUzytkownika.findByEmail(email).isPresent();
+        return magazynUzytkownika.existsByEmail(email);
         // Alternatywnie, jeśli masz w repo: boolean existsByEmail(String email);
         // return magazynUzytkownika.existsByEmail(email);
     }
@@ -145,6 +152,14 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
                 nowyEmail == null || nowyEmail.isEmpty()) {
             throw new IllegalArgumentException("Nazwa i email nie mogą być puste podczas aktualizacji.");
         }
+        // Sprawdzenie, czy nazwa użytkownika jest już zajęta
+        if (magazynUzytkownika.existsByNazwa(nowaNazwa)) { // Zakładając, że 'nazwa' to pole unikalnego username
+            throw new IllegalArgumentException("Nazwa użytkownika '" + nowaNazwa + "' jest już zajęta.");
+        }
+        // Sprawdzenie, czy email jest już zajęty (jeśli email też ma być unikalny)
+        if (magazynUzytkownika.existsByEmail(nowyEmail)) {
+            throw new IllegalArgumentException("Adres email '" + nowyEmail + "' jest już zarejestrowany.");
+        }
 
         // Znajdź istniejącego użytkownika lub rzuć wyjątek
         Uzytkownik uzytkownik = magazynUzytkownika.findById(id)
@@ -166,5 +181,32 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
 
     public Uzytkownik znajdzUrzytkownikaPrzezNazwe(String nazwaUzytkownika) {
         return magazynUzytkownika.findByNazwa(nazwaUzytkownika);
+    }
+
+    public void zmienDaneLogowaniaPoEmail(String email, String nowaNazwa, String noweHaslo) {
+        Uzytkownik uzytkownik = magazynUzytkownika.findByEmail(email) // Załóżmy, że masz metodę findByEmail
+                .orElseThrow(() -> new DaneNieZnalesionoExeption("Użytkownik o adresie email '" + email + "' nie został znaleziony."));
+
+        boolean dokonanoZmiany = false;
+
+        if (nowaNazwa != null && !nowaNazwa.isBlank() && !nowaNazwa.equals(uzytkownik.getName())) {
+            // Sprawdzenie unikalności nowej nazwy użytkownika
+            if (magazynUzytkownika.existsByNazwa(nowaNazwa)) { // Metoda existsByNazwa w repozytorium
+                throw new IllegalArgumentException("Nazwa użytkownika '" + nowaNazwa + "' jest już zajęta.");
+            }
+            uzytkownik.setName(nowaNazwa); // Zakładając, że pole w encji Uzytkownik to 'nazwa'
+            dokonanoZmiany = true;
+        }
+
+        if (noweHaslo != null && !noweHaslo.isBlank()) {
+            uzytkownik.setHaslo(passwordEncoder.encode(noweHaslo));
+            dokonanoZmiany = true;
+        }
+
+        if (dokonanoZmiany) {
+            magazynUzytkownika.save(uzytkownik);
+        }
+        // Jeśli nie dokonano żadnej zmiany, można rozważyć rzucenie wyjątku lub zwrócenie innego statusu,
+        // ale obecna logika po prostu nie zapisze, jeśli nic się nie zmieniło (poza odnalezieniem użytkownika).
     }
 }

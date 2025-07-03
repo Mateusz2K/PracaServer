@@ -4,16 +4,15 @@ package zarzadzanieFinansami.serwisy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zarzadzanieFinansami.DTO.budzet.BudzetRequestDTO;
-import zarzadzanieFinansami.DTO.budzet.BudzetResponseDTO;
-import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuRequestDTO;
-import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuResponseDTO;
+import zarzadzanieFinansami.DTO.budzet.BudzetWysylanieDTO;
+import zarzadzanieFinansami.DTO.budzet.BudzetOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuWysylanieDTO;
+import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuOdpowiedzDTO;
 import zarzadzanieFinansami.magazyn.*;
 import zarzadzanieFinansami.modele.*;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
-import zarzadzanieFinansami.wyjątki.DuplikatException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -48,7 +47,7 @@ public class BudzetUsługa {
     }
 
     @Transactional
-    public BudzetResponseDTO stworzBudzet(BudzetRequestDTO dto, String username) {
+    public BudzetOdpowiedzDTO stworzBudzet(BudzetWysylanieDTO dto, String username) {
         Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
 
         // Walidacja daty końcowej jeśli okresowość nie jest ustawiona
@@ -101,7 +100,7 @@ public class BudzetUsługa {
 
         BigDecimal sumaAlokowana = BigDecimal.ZERO;
         if (dto.getPozycjeBudzetu() != null && !dto.getPozycjeBudzetu().isEmpty()) {
-            for (PozycjaBudzetuRequestDTO pozDto : dto.getPozycjeBudzetu()) {
+            for (PozycjaBudzetuWysylanieDTO pozDto : dto.getPozycjeBudzetu()) {
                 Kategoria kategoria = magazynKategorii.findByUzytkownikAndId(uzytkownik, pozDto.getKategoriaId())
                         .orElseThrow(() -> new DaneNieZnalesionoExeption("Kategoria o ID: " + pozDto.getKategoriaId() + " nie znaleziona dla użytkownika."));
 
@@ -135,7 +134,7 @@ public class BudzetUsługa {
     }
 
     @Transactional(readOnly = true)
-    public List<BudzetResponseDTO> pobierzBudzetyUzytkownika(String username) {
+    public List<BudzetOdpowiedzDTO> pobierzBudzetyUzytkownika(String username) {
         Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
         return magazynBudzetu.findByUzytkownikOrderByDataPoczatkowaDesc(uzytkownik)
                 .stream()
@@ -144,7 +143,7 @@ public class BudzetUsługa {
     }
 
     @Transactional(readOnly = true)
-    public BudzetResponseDTO pobierzBudzetPoId(Long budzetId, String username) {
+    public BudzetOdpowiedzDTO pobierzBudzetPoId(Long budzetId, String username) {
         Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
         Budzet budzet = magazynBudzetu.findByIdAndUzytkownik(budzetId, uzytkownik)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Budżet o ID: " + budzetId + " nie znaleziony lub nie należy do użytkownika."));
@@ -152,7 +151,7 @@ public class BudzetUsługa {
     }
 
     @Transactional
-    public BudzetResponseDTO aktualizujBudzet(Long budzetId, BudzetRequestDTO dto, String username) {
+    public BudzetOdpowiedzDTO aktualizujBudzet(Long budzetId, BudzetWysylanieDTO dto, String username) {
         Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
         Budzet budzet = magazynBudzetu.findByIdAndUzytkownik(budzetId, uzytkownik)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Budżet o ID: " + budzetId + " nie znaleziony lub nie należy do użytkownika."));
@@ -189,7 +188,7 @@ public class BudzetUsługa {
         BigDecimal nowaSumaAlokowana = BigDecimal.ZERO;
 
         if (dto.getPozycjeBudzetu() != null && !dto.getPozycjeBudzetu().isEmpty()) {
-            for (PozycjaBudzetuRequestDTO pozDto : dto.getPozycjeBudzetu()) {
+            for (PozycjaBudzetuWysylanieDTO pozDto : dto.getPozycjeBudzetu()) {
                 Kategoria kategoria = magazynKategorii.findByUzytkownikAndId(uzytkownik, pozDto.getKategoriaId())
                         .orElseThrow(() -> new DaneNieZnalesionoExeption("Kategoria o ID: " + pozDto.getKategoriaId() + " nie znaleziona dla użytkownika."));
 
@@ -231,8 +230,8 @@ public class BudzetUsługa {
         magazynBudzetu.delete(budzet);
     }
 
-    private BudzetResponseDTO mapToBudzetResponseDTO(Budzet budzet, Uzytkownik uzytkownik) {
-        List<PozycjaBudzetuResponseDTO> pozycjeDto = new ArrayList<>();
+    private BudzetOdpowiedzDTO mapToBudzetResponseDTO(Budzet budzet, Uzytkownik uzytkownik) {
+        List<PozycjaBudzetuOdpowiedzDTO> pozycjeDto = new ArrayList<>();
         BigDecimal sumaRzeczywistychWydatkowCalegoBudzetu = BigDecimal.ZERO;
 
         LocalDate dataPoczatkuOkresu = budzet.getDataPoczatkowa();
@@ -262,7 +261,7 @@ public class BudzetUsługa {
 
             sumaRzeczywistychWydatkowCalegoBudzetu = sumaRzeczywistychWydatkowCalegoBudzetu.add(sumaWydatkowDlaPozycji);
 
-            pozycjeDto.add(new PozycjaBudzetuResponseDTO(
+            pozycjeDto.add(new PozycjaBudzetuOdpowiedzDTO(
                     pozycja.getId(),
                     pozycja.getKategoria().getId(),
                     pozycja.getKategoria().getNazwa(),
@@ -273,7 +272,7 @@ public class BudzetUsługa {
             ));
         }
 
-        return new BudzetResponseDTO(
+        return new BudzetOdpowiedzDTO(
                 budzet.getId(),
                 budzet.getNazwa(),
                 uzytkownik.getId(),

@@ -1,6 +1,6 @@
 package zarzadzanieFinansami.DTO.logowanie;
 
-public class UzytkownikResponseDTO {
+public class UzytkownikOdpowiedzDTO {
         private Integer id;
         private String name;
         private String email;
@@ -8,7 +8,7 @@ public class UzytkownikResponseDTO {
 
         // Konstruktor, Gettery (Settery niekoniecznie potrzebne)
 
-        public UzytkownikResponseDTO(Integer id, String name, String email, String rola) {
+        public UzytkownikOdpowiedzDTO(Integer id, String name, String email, String rola) {
                 this.id = id;
                 this.name = name;
                 this.email = email;

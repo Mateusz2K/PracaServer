@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication; // Import
 import org.springframework.web.bind.annotation.*;
-import zarzadzanieFinansami.DTO.kategoria.KategoriaResponseDTO;
-import zarzadzanieFinansami.DTO.kategoria.KategoriaTworzenieDTO;
+import zarzadzanieFinansami.DTO.kategoria.KategoriaOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.kategoria.KategoriaWysylanieDTO;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika; // Import
 import zarzadzanieFinansami.modele.Kategoria;
 import zarzadzanieFinansami.modele.Uzytkownik; // Import
@@ -33,9 +33,9 @@ public class KategoriaKontroler {
     }
 
     // Metoda pomocnicza do mapowania (pozostaje bez zmian)
-    private KategoriaResponseDTO mapToDto(Kategoria kategoria) {
+    private KategoriaOdpowiedzDTO mapToDto(Kategoria kategoria) {
         if (kategoria == null) return null;
-        return new KategoriaResponseDTO(
+        return new KategoriaOdpowiedzDTO(
                 kategoria.getId(),
                 kategoria.getNazwa(),
                 kategoria.getTypTransakcji()
@@ -59,7 +59,7 @@ public class KategoriaKontroler {
 
     // Tworzenie nowej kategorii
     @PostMapping
-    public ResponseEntity<?> stworzKategorie(@Valid @RequestBody KategoriaTworzenieDTO dto, Authentication authentication) { // <-- DODAJ Authentication
+    public ResponseEntity<?> stworzKategorie(@Valid @RequestBody KategoriaWysylanieDTO dto, Authentication authentication) { // <-- DODAJ Authentication
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication); // <-- POBIERZ UŻYTKOWNIKA
         try {
             Kategoria nowaKategoria = kategoriaUsługa.stworzKategorie(dto, currentUser); // <-- PRZEKAŻ UŻYTKOWNIKA
@@ -80,7 +80,7 @@ public class KategoriaKontroler {
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication); // <-- POBIERZ UŻYTKOWNIKA
         try {
             List<Kategoria> kategorie = kategoriaUsługa.pobierzWszystkieKategorie(currentUser); // <-- PRZEKAŻ UŻYTKOWNIKA
-            List<KategoriaResponseDTO> dtos = kategorie.stream().map(this::mapToDto).collect(Collectors.toList());
+            List<KategoriaOdpowiedzDTO> dtos = kategorie.stream().map(this::mapToDto).collect(Collectors.toList());
             return ResponseEntity.ok(dtos);
         } catch (DaneNieZnalesionoExeption e) { // Obsługa błędu pobierania użytkownika
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
@@ -108,7 +108,7 @@ public class KategoriaKontroler {
     // Aktualizacja kategorii DLA BIEŻĄCEGO UŻYTKOWNIKA
     // @PreAuthorize("hasRole('ADMIN')") // Jeśli kategorie globalne
     @PutMapping("/{id}")
-    public ResponseEntity<?> aktualizujKategorie(@PathVariable Integer id, @Valid @RequestBody KategoriaTworzenieDTO dto, Authentication authentication) { // <-- DODAJ Authentication
+    public ResponseEntity<?> aktualizujKategorie(@PathVariable Integer id, @Valid @RequestBody KategoriaWysylanieDTO dto, Authentication authentication) { // <-- DODAJ Authentication
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication); // <-- POBIERZ UŻYTKOWNIKA
         try {
             Kategoria zaktualizowanaKategoria = kategoriaUsługa.aktualizujKategorie(id, dto, currentUser); // <-- PRZEKAŻ UŻYTKOWNIKA

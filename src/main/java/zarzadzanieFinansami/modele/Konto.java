@@ -46,9 +46,6 @@ public class Konto {
     //zasadyPowiadomien
     @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ZasadyPowiadomien> zasadyPowiadomien;
-    //rejestr
-    @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Rejestr> rejestry;
     //transakcja
     @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transakcja> transakcje;
@@ -163,13 +160,6 @@ public class Konto {
         this.zasadyPowiadomien = zasadyPowiadomien;
     }
 
-    public List<Rejestr> getRejestry() {
-        return rejestry;
-    }
-
-    public void setRejestry(List<Rejestr> rejestry) {
-        this.rejestry = rejestry;
-    }
 
     public List<Transakcja> getTransakcje() {
         return transakcje;

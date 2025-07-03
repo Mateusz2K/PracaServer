@@ -8,8 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import zarzadzanieFinansami.DTO.logowanie.RejestrowanieUzytkownikaRequestDTO;
+import zarzadzanieFinansami.DTO.logowanie.RejestrowanieUzytkownikaWysylanieDTO;
+import zarzadzanieFinansami.DTO.logowanie.ZmianaUzytkownikaWysylanieDTO;
 import zarzadzanieFinansami.serwisy.UzytkownikUsluga;
+import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 // import java.net.URI; // Potrzebne dla ResponseEntity.created
 
 @RestController
@@ -24,17 +26,31 @@ public class RejestrowawnieKontroler {
         this.uzytkownikUsluga = uzytkownikUsluga;
     }
 
-    @PostMapping("/rejestr")
+    @PostMapping("/rejestracja")
     // Zwracanie ResponseEntity daje większą kontrolę nad odpowiedzią HTTP
-    public ResponseEntity<Void> rejestruj(@Valid @RequestBody RejestrowanieUzytkownikaRequestDTO uzytkownik){
+    public ResponseEntity<String> rejestruj(@Valid @RequestBody RejestrowanieUzytkownikaWysylanieDTO uzytkownik){
         // Wywołanie serwisu jest poprawne zgodnie z jego nową sygnaturą
         // Zakłada, że obiekt 'uzytkownik' z @RequestBody zawiera surowe hasło w polu 'haslo'
         uzytkownikUsluga.stworzUzytkownika(uzytkownik.getNazwa(), uzytkownik.getEmail(), uzytkownik.getHasło());
 
 
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(uzytkownik.getNazwa());
         // Alternatywnie zwrócić np. ID:
         // Uzytkownik stworzony = uzytkownikUsluga.stworzUzytkownika(...);
         // return ResponseEntity.status(HttpStatus.CREATED).body(stworzony.getId()); // Zwraca tylko ID
     }
+    @PostMapping("/odzyskaj-dane") // lub np. /api/auth/odzyskaj-dane
+    public ResponseEntity<?> odzyskajDaneUzytkownika(@Valid @RequestBody ZmianaUzytkownikaWysylanieDTO requestDTO) {
+        try {
+            // Załóżmy, że uzytkownikUsluga ma metodę do obsługi tej logiki
+            uzytkownikUsluga.zmienDaneLogowaniaPoEmail(requestDTO.getNowyEmail(), requestDTO.getNowaNazwa(), requestDTO.getNoweHaslo());
+            return ResponseEntity.ok("Jeśli użytkownik o podanym emailu istnieje, jego dane zostały zaktualizowane. " +
+                    "Jeśli podałeś nowe hasło, użyj go przy następnym logowaniu.");
+        } catch (DaneNieZnalesionoExeption e) { // Jeśli użytkownik o danym emailu nie istnieje
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) { // Np. jeśli nowa nazwa jest już zajęta
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 }

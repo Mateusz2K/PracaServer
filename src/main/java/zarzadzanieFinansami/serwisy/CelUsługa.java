@@ -4,15 +4,14 @@ package zarzadzanieFinansami.serwisy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zarzadzanieFinansami.DTO.cel.CelRequestDTO;
-import zarzadzanieFinansami.DTO.cel.CelResponseDTO;
+import zarzadzanieFinansami.DTO.cel.CelWysylanieDTO;
+import zarzadzanieFinansami.DTO.cel.CelOdpowiedzDTO;
 import zarzadzanieFinansami.magazyn.MagazynCelu;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Cel;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.DuplikatException;
-import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -35,8 +34,8 @@ public class CelUsługa {
         return magazynUzytkownika.findByNazwa(email);
     }
 
-    private CelResponseDTO mapToCelResponseDTO(Cel cel) {
-        return new CelResponseDTO(
+    private CelOdpowiedzDTO mapToCelResponseDTO(Cel cel) {
+        return new CelOdpowiedzDTO(
                 cel.getId(),
                 cel.getNazwaCelu(),
                 cel.getKwotaDocelowa(),
@@ -49,7 +48,7 @@ public class CelUsługa {
     }
 
     @Transactional
-    public CelResponseDTO stworzCel(CelRequestDTO dto, String emailUzytkownika) {
+    public CelOdpowiedzDTO stworzCel(CelWysylanieDTO dto, String emailUzytkownika) {
         Uzytkownik uzytkownik = pobierzUzytkownikaPoNazwie(emailUzytkownika);
         if (magazynCelu.existsByNazwaCeluAndUzytkownikId(dto.getNazwaCelu(), uzytkownik.getId())) {
             throw new DuplikatException("Cel o nazwie '" + dto.getNazwaCelu() + "' już istnieje dla tego użytkownika.");
@@ -69,7 +68,7 @@ public class CelUsługa {
     }
 
     @Transactional(readOnly = true)
-    public List<CelResponseDTO> pobierzCeleUzytkownika(String emailUzytkownika) {
+    public List<CelOdpowiedzDTO> pobierzCeleUzytkownika(String emailUzytkownika) {
         Uzytkownik uzytkownik = pobierzUzytkownikaPoNazwie(emailUzytkownika);
         return magazynCelu.findByUzytkownikId(uzytkownik.getId())
                 .stream()
@@ -78,7 +77,7 @@ public class CelUsługa {
     }
 
     @Transactional(readOnly = true)
-    public CelResponseDTO pobierzCelPoId(Integer celId, String emailUzytkownika) {
+    public CelOdpowiedzDTO pobierzCelPoId(Integer celId, String emailUzytkownika) {
         Uzytkownik uzytkownik = pobierzUzytkownikaPoNazwie(emailUzytkownika);
         Cel cel = magazynCelu.findByUzytkownikIdAndId(uzytkownik.getId(), celId)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Cel o ID: " + celId + " nie został znaleziony lub nie należy do użytkownika."));
@@ -86,7 +85,7 @@ public class CelUsługa {
     }
 
     @Transactional
-    public CelResponseDTO aktualizujCel(Integer celId, CelRequestDTO dto, String emailUzytkownika) {
+    public CelOdpowiedzDTO aktualizujCel(Integer celId, CelWysylanieDTO dto, String emailUzytkownika) {
         Uzytkownik uzytkownik = pobierzUzytkownikaPoNazwie(emailUzytkownika);
         Cel cel = magazynCelu.findByUzytkownikIdAndId(uzytkownik.getId(), celId)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Cel o ID: " + celId + " nie został znaleziony lub nie należy do użytkownika."));
@@ -116,7 +115,7 @@ public class CelUsługa {
     }
 
     @Transactional
-    public CelResponseDTO dodajSrodkiDoCelu(Integer celId, BigDecimal kwota, String emailUzytkownika) {
+    public CelOdpowiedzDTO dodajSrodkiDoCelu(Integer celId, BigDecimal kwota, String emailUzytkownika) {
         Uzytkownik uzytkownik = pobierzUzytkownikaPoNazwie(emailUzytkownika);
         Cel cel = magazynCelu.findByUzytkownikIdAndId(uzytkownik.getId(), celId)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Cel o ID: " + celId + " nie został znaleziony lub nie należy do użytkownika."));

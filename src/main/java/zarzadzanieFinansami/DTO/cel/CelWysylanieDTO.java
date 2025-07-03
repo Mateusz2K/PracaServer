@@ -3,14 +3,13 @@ package zarzadzanieFinansami.DTO.cel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-public class CelRequestDTO {
+public class CelWysylanieDTO {
 
     @NotBlank(message = "Nazwa celu nie może być pusta.")
     @Size(max = 100, message = "Nazwa celu może mieć maksymalnie 100 znaków.")

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class BudzetResponseDTO {
+public class BudzetOdpowiedzDTO {
     private Long id;
     private String nazwa;
     private Integer uzytkownikId;
@@ -21,10 +21,10 @@ public class BudzetResponseDTO {
     private Integer procentNaPotrzeby;
     private Integer procentNaZachcianki;
     private Integer procentNaInwestycje;
-    private List<PozycjaBudzetuResponseDTO> pozycjeBudzetu;
+    private List<PozycjaBudzetuOdpowiedzDTO> pozycjeBudzetu;
 
     // Konstruktor, Gettery i Settery
-    public BudzetResponseDTO(Long id, String nazwa, Integer uzytkownikId, LocalDate dataPoczatkowa, LocalDate dataKoncowa, OkresowoscEnum okresowosc, BigDecimal przewidywanyDochod, BigDecimal sumaAlokowana, BigDecimal sumaRzeczywistychWydatkow, boolean aktywny, Long szablonId, Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaBudzetuResponseDTO> pozycjeBudzetu) {
+    public BudzetOdpowiedzDTO(Long id, String nazwa, Integer uzytkownikId, LocalDate dataPoczatkowa, LocalDate dataKoncowa, OkresowoscEnum okresowosc, BigDecimal przewidywanyDochod, BigDecimal sumaAlokowana, BigDecimal sumaRzeczywistychWydatkow, boolean aktywny, Long szablonId, Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaBudzetuOdpowiedzDTO> pozycjeBudzetu) {
         this.id = id;
         this.nazwa = nazwa;
         this.uzytkownikId = uzytkownikId;
@@ -61,5 +61,5 @@ public class BudzetResponseDTO {
     public Integer getProcentNaPotrzeby() { return procentNaPotrzeby; }
     public Integer getProcentNaZachcianki() { return procentNaZachcianki; }
     public Integer getProcentNaInwestycje() { return procentNaInwestycje; }
-    public List<PozycjaBudzetuResponseDTO> getPozycjeBudzetu() { return pozycjeBudzetu; }
+    public List<PozycjaBudzetuOdpowiedzDTO> getPozycjeBudzetu() { return pozycjeBudzetu; }
 }

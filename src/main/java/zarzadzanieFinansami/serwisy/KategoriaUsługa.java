@@ -3,7 +3,7 @@ package zarzadzanieFinansami.serwisy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zarzadzanieFinansami.DTO.kategoria.KategoriaTworzenieDTO;
+import zarzadzanieFinansami.DTO.kategoria.KategoriaWysylanieDTO;
 import zarzadzanieFinansami.magazyn.MagazynKategorii;
 import zarzadzanieFinansami.modele.Kategoria;
 import zarzadzanieFinansami.modele.Uzytkownik; // Import
@@ -24,7 +24,7 @@ public class KategoriaUsługa {
     }
 
     @Transactional
-    public Kategoria stworzKategorie(KategoriaTworzenieDTO dto, Uzytkownik currentUser) { // <-- DODAJ currentUser
+    public Kategoria stworzKategorie(KategoriaWysylanieDTO dto, Uzytkownik currentUser) { // <-- DODAJ currentUser
         // Sprawdzenie, czy kategoria o tej nazwie już istnieje DLA TEGO UŻYTKOWNIKA
         Optional<Kategoria> istniejacaKategoria = magazynKategorii.findByUzytkownikAndNazwa(currentUser, dto.getNazwa()); // <-- UŻYJ NOWEJ METODY
         if (istniejacaKategoria.isPresent()) {
@@ -51,7 +51,7 @@ public class KategoriaUsługa {
     }
 
     @Transactional
-    public Kategoria aktualizujKategorie(Integer id, KategoriaTworzenieDTO dto, Uzytkownik currentUser) { // <-- DODAJ currentUser
+    public Kategoria aktualizujKategorie(Integer id, KategoriaWysylanieDTO dto, Uzytkownik currentUser) { // <-- DODAJ currentUser
         Kategoria kategoriaDoAktualizacji = pobierzKategoriePoId(id, currentUser); // Wykorzystuje metodę z walidacją i filtrowaniem po użytkowniku
 
         // Sprawdzenie, czy nowa nazwa nie koliduje z inną istniejącą kategorią DLA TEGO UŻYTKOWNIKA

@@ -2,7 +2,7 @@ package zarzadzanieFinansami.DTO.logowanie;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginRequestDTO {
+public class LogowanieWysylanieDTO {
 
     @NotBlank(message = "Nazwa nie może być pusta")
     private String nazwa;

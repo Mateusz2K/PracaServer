@@ -8,8 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import zarzadzanieFinansami.DTO.cel.CelRequestDTO;
-import zarzadzanieFinansami.DTO.cel.CelResponseDTO;
+import zarzadzanieFinansami.DTO.cel.CelWysylanieDTO;
+import zarzadzanieFinansami.DTO.cel.CelOdpowiedzDTO;
 import zarzadzanieFinansami.serwisy.CelUsługa;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
@@ -36,30 +36,30 @@ public class CelKontroler {
     }
 
     @PostMapping
-    public ResponseEntity<CelResponseDTO> stworzCel(@Valid @RequestBody CelRequestDTO dto, Authentication authentication) {
+    public ResponseEntity<CelOdpowiedzDTO> stworzCel(@Valid @RequestBody CelWysylanieDTO dto, Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        CelResponseDTO stworzonyCel = celUsługa.stworzCel(dto, emailUzytkownika);
+        CelOdpowiedzDTO stworzonyCel = celUsługa.stworzCel(dto, emailUzytkownika);
         return new ResponseEntity<>(stworzonyCel, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<CelResponseDTO>> pobierzCeleUzytkownika(Authentication authentication) {
+    public ResponseEntity<List<CelOdpowiedzDTO>> pobierzCeleUzytkownika(Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        List<CelResponseDTO> cele = celUsługa.pobierzCeleUzytkownika(emailUzytkownika);
+        List<CelOdpowiedzDTO> cele = celUsługa.pobierzCeleUzytkownika(emailUzytkownika);
         return ResponseEntity.ok(cele);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CelResponseDTO> pobierzCelPoId(@PathVariable Integer id, Authentication authentication) {
+    public ResponseEntity<CelOdpowiedzDTO> pobierzCelPoId(@PathVariable Integer id, Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        CelResponseDTO cel = celUsługa.pobierzCelPoId(id, emailUzytkownika);
+        CelOdpowiedzDTO cel = celUsługa.pobierzCelPoId(id, emailUzytkownika);
         return ResponseEntity.ok(cel);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CelResponseDTO> aktualizujCel(@PathVariable Integer id, @Valid @RequestBody CelRequestDTO dto, Authentication authentication) {
+    public ResponseEntity<CelOdpowiedzDTO> aktualizujCel(@PathVariable Integer id, @Valid @RequestBody CelWysylanieDTO dto, Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        CelResponseDTO zaktualizowanyCel = celUsługa.aktualizujCel(id, dto, emailUzytkownika);
+        CelOdpowiedzDTO zaktualizowanyCel = celUsługa.aktualizujCel(id, dto, emailUzytkownika);
         return ResponseEntity.ok(zaktualizowanyCel);
     }
 
@@ -72,11 +72,11 @@ public class CelKontroler {
 
     // Dodatkowy endpoint do dodawania środków do celu
     @PostMapping("/{id}/dodaj-srodki")
-    public ResponseEntity<CelResponseDTO> dodajSrodkiDoCelu(@PathVariable Integer id,
-                                                            @RequestParam BigDecimal kwota,
-                                                            Authentication authentication) {
+    public ResponseEntity<CelOdpowiedzDTO> dodajSrodkiDoCelu(@PathVariable Integer id,
+                                                             @RequestParam BigDecimal kwota,
+                                                             Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        CelResponseDTO zaktualizowanyCel = celUsługa.dodajSrodkiDoCelu(id, kwota, emailUzytkownika);
+        CelOdpowiedzDTO zaktualizowanyCel = celUsługa.dodajSrodkiDoCelu(id, kwota, emailUzytkownika);
         return ResponseEntity.ok(zaktualizowanyCel);
     }
 }

@@ -5,7 +5,7 @@ import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
 
 import java.math.BigDecimal;
 
-public class PozycjaBudzetuResponseDTO {
+public class PozycjaBudzetuOdpowiedzDTO {
     private Long id;
     private Integer kategoriaId;
     private String kategoriaNazwa;
@@ -17,7 +17,7 @@ public class PozycjaBudzetuResponseDTO {
     private Double procentWykorzystania; // (rzeczywisteWydatki / kwotaAlokowana) * 100
 
     // Konstruktor, Gettery i Settery
-    public PozycjaBudzetuResponseDTO(Long id, Integer kategoriaId, String kategoriaNazwa, TypAlokacjiEnum typAlokacji, BigDecimal procentAlokowany, BigDecimal kwotaAlokowana, BigDecimal rzeczywisteWydatki) {
+    public PozycjaBudzetuOdpowiedzDTO(Long id, Integer kategoriaId, String kategoriaNazwa, TypAlokacjiEnum typAlokacji, BigDecimal procentAlokowany, BigDecimal kwotaAlokowana, BigDecimal rzeczywisteWydatki) {
         this.id = id;
         this.kategoriaId = kategoriaId;
         this.kategoriaNazwa = kategoriaNazwa;

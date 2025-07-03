@@ -2,18 +2,18 @@ package zarzadzanieFinansami.DTO.kategoria;
 
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 
-public class KategoriaResponseDTO {
+public class KategoriaOdpowiedzDTO {
     private Integer id;
     private String nazwa;
     private TypTransakcjiEnum typTransakcji;
 
-    public KategoriaResponseDTO(Integer id, String nazwa, TypTransakcjiEnum typTransakcji) {
+    public KategoriaOdpowiedzDTO(Integer id, String nazwa, TypTransakcjiEnum typTransakcji) {
         this.id = id;
         this.nazwa = nazwa;
         this.typTransakcji = typTransakcji;
     }
 
-    public KategoriaResponseDTO() { // Dla Jacksona
+    public KategoriaOdpowiedzDTO() { // Dla Jacksona
     }
 
     // Gettery i Settery

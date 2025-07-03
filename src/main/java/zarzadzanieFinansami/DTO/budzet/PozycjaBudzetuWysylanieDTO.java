@@ -1,28 +1,26 @@
-package zarzadzanieFinansami.DTO.budzet.szablon;
-
+package zarzadzanieFinansami.DTO.budzet;
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.DecimalMin;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
 import java.math.BigDecimal;
 
-public class PozycjaSzablonuBudzetuRequestDTO {
-    private Integer kategoriaId; // Opcjonalne, jeśli używamy metaKategorii
-
-    @Size(max = 50)
-    private String metaKategoriaNazwa; // Np. "POTRZEBY", "ZACHCIANKI"
+public class PozycjaBudzetuWysylanieDTO {
+    @NotNull(message = "ID kategorii jest wymagane.")
+    private Integer kategoriaId;
 
     @NotNull(message = "Typ alokacji jest wymagany.")
     private TypAlokacjiEnum typAlokacji;
 
-    private BigDecimal procentAlokowany;
-    private BigDecimal kwotaAlokowana;
+    @DecimalMin(value = "0.0", message = "Procent alokowany musi być nieujemny.")
+    private BigDecimal procentAlokowany; // Np. 10 dla 10%, jeśli typAlokacji = PROCENTOWA
+
+    @DecimalMin(value = "0.00", message = "Kwota alokowana musi być nieujemna.")
+    private BigDecimal kwotaAlokowana;   // Jeśli typAlokacji = KWOTOWA
 
     // Gettery i Settery
     public Integer getKategoriaId() { return kategoriaId; }
     public void setKategoriaId(Integer kategoriaId) { this.kategoriaId = kategoriaId; }
-    public String getMetaKategoriaNazwa() { return metaKategoriaNazwa; }
-    public void setMetaKategoriaNazwa(String metaKategoriaNazwa) { this.metaKategoriaNazwa = metaKategoriaNazwa; }
     public TypAlokacjiEnum getTypAlokacji() { return typAlokacji; }
     public void setTypAlokacji(TypAlokacjiEnum typAlokacji) { this.typAlokacji = typAlokacji; }
     public BigDecimal getProcentAlokowany() { return procentAlokowany; }

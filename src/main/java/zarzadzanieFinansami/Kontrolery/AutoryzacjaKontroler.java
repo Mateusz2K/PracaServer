@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import zarzadzanieFinansami.DTO.logowanie.JwtResponseDTO;
-import zarzadzanieFinansami.DTO.logowanie.LoginRequestDTO;
+import zarzadzanieFinansami.DTO.logowanie.JwtOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.logowanie.LogowanieWysylanieDTO;
 import zarzadzanieFinansami.JWT.JwtUtil; // Upewnij się, że ścieżka do JwtUtil jest poprawna
 
 @RestController
@@ -36,7 +36,7 @@ public class AutoryzacjaKontroler {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LogowanieWysylanieDTO loginRequest) {
 
         // Uwierzytelnij użytkownika za pomocą nazwy i hasła
         Authentication authentication = authenticationManager.authenticate(
@@ -54,7 +54,7 @@ public class AutoryzacjaKontroler {
          // Prostszy sposób, jeśli UserDetails.getUsername() to email
 
         // Zwróć token w odpowiedzi
-        return ResponseEntity.ok(new JwtResponseDTO(jwt, username));
+        return ResponseEntity.ok(new JwtOdpowiedzDTO(jwt, username));
     }
 
     // dodać inne endpointy, np. /register, /refresh-token itp.

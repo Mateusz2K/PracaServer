@@ -3,7 +3,7 @@ package zarzadzanieFinansami.DTO.budzet.szablon;
 
 import java.util.List;
 
-public class SzablonBudzetuResponseDTO {
+public class SzablonBudzetuOdpowiedzDTO {
     private Long id;
     private String nazwa;
     private String opis;
@@ -12,10 +12,10 @@ public class SzablonBudzetuResponseDTO {
     private Integer procentNaPotrzeby;
     private Integer procentNaZachcianki;
     private Integer procentNaInwestycje;
-    private List<PozycjaSzablonuBudzetuResponseDTO> pozycjeSzablonu;
+    private List<PozycjaSzablonuBudzetuOdpowiedzDTO> pozycjeSzablonu;
 
     // Konstruktor, Gettery i Settery
-    public SzablonBudzetuResponseDTO(Long id, String nazwa, String opis, Integer uzytkownikId, boolean czySystemowy, Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaSzablonuBudzetuResponseDTO> pozycjeSzablonu) {
+    public SzablonBudzetuOdpowiedzDTO(Long id, String nazwa, String opis, Integer uzytkownikId, boolean czySystemowy, Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaSzablonuBudzetuOdpowiedzDTO> pozycjeSzablonu) {
         this.id = id;
         this.nazwa = nazwa;
         this.opis = opis;
@@ -36,5 +36,5 @@ public class SzablonBudzetuResponseDTO {
     public Integer getProcentNaPotrzeby() { return procentNaPotrzeby; }
     public Integer getProcentNaZachcianki() { return procentNaZachcianki; }
     public Integer getProcentNaInwestycje() { return procentNaInwestycje; }
-    public List<PozycjaSzablonuBudzetuResponseDTO> getPozycjeSzablonu() { return pozycjeSzablonu; }
+    public List<PozycjaSzablonuBudzetuOdpowiedzDTO> getPozycjeSzablonu() { return pozycjeSzablonu; }
 }

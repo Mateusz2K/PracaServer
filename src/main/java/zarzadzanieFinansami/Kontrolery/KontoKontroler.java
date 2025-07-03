@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import zarzadzanieFinansami.DTO.konto.KontoResponseDTO;
-import zarzadzanieFinansami.DTO.konto.KontoTworzenieDTO; // Zakładam, że masz to DTO
-import zarzadzanieFinansami.DTO.konto.KontoUpdateDTO;   // Zakładam, że masz to DTO
+import zarzadzanieFinansami.DTO.konto.KontoOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.konto.KontoWysylanieDTO; // Zakładam, że masz to DTO
+import zarzadzanieFinansami.DTO.konto.KontoAktualizacjaDTO;   // Zakładam, że masz to DTO
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Konto;
 import zarzadzanieFinansami.modele.Uzytkownik;
@@ -35,11 +35,11 @@ public class KontoKontroler {
     }
 
     // Metoda pomocnicza do mapowania encji Konto na KontoResponseDTO
-    private KontoResponseDTO mapKontoToKontoResponseDTO(Konto konto) {
+    private KontoOdpowiedzDTO mapKontoToKontoResponseDTO(Konto konto) {
         if (konto == null) {
             return null;
         }
-        return new KontoResponseDTO(
+        return new KontoOdpowiedzDTO(
                 konto.getId(),
                 konto.getNazwa(),
                 konto.getBilans(),
@@ -65,26 +65,26 @@ public class KontoKontroler {
 
     // Tworzenie nowego konta
     @PostMapping
-    public ResponseEntity<?> stworzKonto(@Valid @RequestBody KontoTworzenieDTO kontoTworzenieDTO, Authentication authentication) {
+    public ResponseEntity<?> stworzKonto(@Valid @RequestBody KontoWysylanieDTO kontoWysylanieDTO, Authentication authentication) {
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication);
         try {
             // Mapowanie z DTO na encję Konto
             Konto noweKontoEncja = new Konto();
-            noweKontoEncja.setNazwa(kontoTworzenieDTO.getNazwa());
-            noweKontoEncja.setBilans(kontoTworzenieDTO.getBilans());
+            noweKontoEncja.setNazwa(kontoWysylanieDTO.getNazwa());
+            noweKontoEncja.setBilans(kontoWysylanieDTO.getBilans());
             try {
-                noweKontoEncja.setTyp(TypKontaEnum.valueOf(kontoTworzenieDTO.getTyp().toUpperCase()));
+                noweKontoEncja.setTyp(TypKontaEnum.valueOf(kontoWysylanieDTO.getTyp().toUpperCase()));
             } catch (IllegalArgumentException ex) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Nieprawidłowa wartość dla typu konta: " + kontoTworzenieDTO.getTyp() +
+                        .body("Nieprawidłowa wartość dla typu konta: " + kontoWysylanieDTO.getTyp() +
                                 ". Dostępne wartości: " + java.util.Arrays.toString(TypKontaEnum.values()));
             }
 
             try {
-                noweKontoEncja.setWaluta(WalutaEnum.valueOf(kontoTworzenieDTO.getWaluta().toUpperCase())); // Dodaj .toUpperCase()
+                noweKontoEncja.setWaluta(WalutaEnum.valueOf(kontoWysylanieDTO.getWaluta().toUpperCase())); // Dodaj .toUpperCase()
             } catch (IllegalArgumentException ex) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Nieprawidłowa wartość dla waluty: " + kontoTworzenieDTO.getWaluta() +
+                        .body("Nieprawidłowa wartość dla waluty: " + kontoWysylanieDTO.getWaluta() +
                                 ". Dostępne wartości: " + java.util.Arrays.toString(WalutaEnum.values()));
             }
             // Data utworzenia i użytkownik zostaną ustawione w serwisie lub przez @PrePersist
@@ -108,7 +108,7 @@ public class KontoKontroler {
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication);
         try {
             List<Konto> konta = kontoUsluga.pobierzKontaDlaUzytkownikaLubWszystkieDlaAdmina(currentUser);
-            List<KontoResponseDTO> dtos = konta.stream()
+            List<KontoOdpowiedzDTO> dtos = konta.stream()
                     .map(this::mapKontoToKontoResponseDTO)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(dtos);
@@ -142,11 +142,11 @@ public class KontoKontroler {
     // Aktualizacja konta (tylko właściciel)
     @PutMapping("/{idKonta}")
     public ResponseEntity<?> aktualizujKonto(@PathVariable Integer idKonta,
-                                             @Valid @RequestBody KontoUpdateDTO kontoUpdateDTO,
+                                             @Valid @RequestBody KontoAktualizacjaDTO kontoAktualizacjaDTO,
                                              Authentication authentication) {
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication);
         try {
-            Konto zaktualizowaneKontoEncja = kontoUsluga.updateKonto(idKonta, kontoUpdateDTO, currentUser);
+            Konto zaktualizowaneKontoEncja = kontoUsluga.updateKonto(idKonta, kontoAktualizacjaDTO, currentUser);
             return ResponseEntity.ok(mapKontoToKontoResponseDTO(zaktualizowaneKontoEncja));
         } catch (DaneNieZnalesionoExeption e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

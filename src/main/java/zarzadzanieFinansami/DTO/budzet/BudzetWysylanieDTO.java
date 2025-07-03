@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Size;
 import zarzadzanieFinansami.modele.enumeracje.OkresowoscEnum;
@@ -13,7 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-public class BudzetRequestDTO {
+public class BudzetWysylanieDTO {
     @NotBlank(message = "Nazwa budżetu nie może być pusta.")
     @Size(max = 100)
     private String nazwa;
@@ -31,7 +30,7 @@ public class BudzetRequestDTO {
     private BigDecimal przewidywanyDochod;
 
     @Valid
-    private List<PozycjaBudzetuRequestDTO> pozycjeBudzetu;
+    private List<PozycjaBudzetuWysylanieDTO> pozycjeBudzetu;
 
     private Long szablonId; // Opcjonalne ID szablonu, na którym ma bazować budżet
 
@@ -52,8 +51,8 @@ public class BudzetRequestDTO {
     public void setOkresowosc(OkresowoscEnum okresowosc) { this.okresowosc = okresowosc; }
     public BigDecimal getPrzewidywanyDochod() { return przewidywanyDochod; }
     public void setPrzewidywanyDochod(BigDecimal przewidywanyDochod) { this.przewidywanyDochod = przewidywanyDochod; }
-    public List<PozycjaBudzetuRequestDTO> getPozycjeBudzetu() { return pozycjeBudzetu; }
-    public void setPozycjeBudzetu(List<PozycjaBudzetuRequestDTO> pozycjeBudzetu) { this.pozycjeBudzetu = pozycjeBudzetu; }
+    public List<PozycjaBudzetuWysylanieDTO> getPozycjeBudzetu() { return pozycjeBudzetu; }
+    public void setPozycjeBudzetu(List<PozycjaBudzetuWysylanieDTO> pozycjeBudzetu) { this.pozycjeBudzetu = pozycjeBudzetu; }
     public Long getSzablonId() { return szablonId; }
     public void setSzablonId(Long szablonId) { this.szablonId = szablonId; }
     public Integer getProcentNaPotrzeby() { return procentNaPotrzeby; }

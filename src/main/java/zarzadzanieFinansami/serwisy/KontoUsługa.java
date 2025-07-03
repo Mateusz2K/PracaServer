@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zarzadzanieFinansami.DTO.konto.KontoUpdateDTO; // Jeśli masz DTO do aktualizacji konta
+import zarzadzanieFinansami.DTO.konto.KontoAktualizacjaDTO; // Jeśli masz DTO do aktualizacji konta
 import zarzadzanieFinansami.magazyn.MagazynKonta;
 import zarzadzanieFinansami.modele.Konto;
 import zarzadzanieFinansami.modele.Uzytkownik;
@@ -73,7 +73,7 @@ public class KontoUsługa {
     // Metoda aktualizacji konta - tutaj admin NIE POWINIEN domyślnie móc aktualizować kont innych użytkowników
     // chyba że jest to jawnie wymagane i przemyślane. Na razie zostawiamy jak było - tylko właściciel.
     @Transactional
-    public Konto updateKonto(Integer kontoId, KontoUpdateDTO updateDTO, Uzytkownik currentUser) {
+    public Konto updateKonto(Integer kontoId, KontoAktualizacjaDTO updateDTO, Uzytkownik currentUser) {
         Konto kontoDoAktualizacji = magazynKonta.findById(kontoId)
                 .orElseThrow(() -> new DaneNieZnalesionoExeption("Konto o ID " + kontoId + " nie zostało znalezione."));
 

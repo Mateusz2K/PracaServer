@@ -21,7 +21,7 @@ public class Kategoria {
     private List<Transakcja> transakcje;
     //połaczzenie rejestrów
     @OneToMany(mappedBy = "kategoria", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
-    private List<Rejestr> rejestry;
+    private List<PozycjaBudzetu> budzetuList;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uzytkownik_id", nullable = false)
     private Uzytkownik uzytkownik;
@@ -67,12 +67,12 @@ public class Kategoria {
         this.transakcje = transakcje;
     }
 
-    public List<Rejestr> getRejestry() {
-        return rejestry;
+    public List<PozycjaBudzetu> getBudzetuList() {
+        return budzetuList;
     }
 
-    public void setRejestry(List<Rejestr> rejestry) {
-        this.rejestry = rejestry;
+    public void setBudzetuList(List<PozycjaBudzetu> budzetuList) {
+        this.budzetuList = budzetuList;
     }
     public Uzytkownik getUzytkownik() { // <-- GETTER DLA UŻYTKOWNIKA
         return uzytkownik;

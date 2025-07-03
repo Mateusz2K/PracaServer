@@ -30,4 +30,8 @@ public interface MagazynUzytkownika extends JpaRepository<Uzytkownik, Integer> {
     Uzytkownik findByNazwa(String nazwa);
 
     Uzytkownik findUzytkownikByEmail(String email);
+
+    boolean existsByNazwa(String nazwa);
+
+    boolean existsByEmail(String email);
 }

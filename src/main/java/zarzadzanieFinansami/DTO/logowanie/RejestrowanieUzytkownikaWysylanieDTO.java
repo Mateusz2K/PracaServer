@@ -4,7 +4,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class RejestrowanieUzytkownikaRequestDTO {
+public class RejestrowanieUzytkownikaWysylanieDTO {
     String imie;
     @NotBlank(message = "Nazwa użytkownika nie może być pusta.")
     String nazwa;
@@ -17,7 +17,7 @@ public class RejestrowanieUzytkownikaRequestDTO {
 
 
 
-    public RejestrowanieUzytkownikaRequestDTO(String imie, String nazwa, String email, String hasło) {
+    public RejestrowanieUzytkownikaWysylanieDTO(String imie, String nazwa, String email, String hasło) {
         this.imie = imie;
         this.nazwa = nazwa;
         this.email = email;

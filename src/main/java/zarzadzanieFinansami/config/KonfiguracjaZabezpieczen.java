@@ -24,16 +24,16 @@ import zarzadzanieFinansami.serwisy.DetaleUzytkownikówSerwis;
 @EnableWebSecurity
 @Configuration
 @EnableMethodSecurity // Włącz obsługę adnotacji takich jak @PreAuthorize na metodach
-public class SecurityConfig {
+public class KonfiguracjaZabezpieczen {
 
     private final DetaleUzytkownikówSerwis detaleUzytkownikówSerwis;
     private final JwtAutoryzacjaEntryPoint JwtAutoryzacjaEntryPoint; // Dodaj pole
     private final AutoryzacjaTokenuFiltr AutoryzacjaTokenuFiltr; // Dodaj pole dla filtra JWT
 
     @Autowired // Adnotacja @Autowired jest opcjonalna przy jednym konstruktorze, ale dodaję dla jasności
-    public SecurityConfig(DetaleUzytkownikówSerwis detaleUzytkownikówSerwis,
-                          JwtAutoryzacjaEntryPoint JwtAutoryzacjaEntryPoint, // Wstrzyknij JwtAutoryzacjaEntryPoint
-                          AutoryzacjaTokenuFiltr AutoryzacjaTokenuFiltr) { // Wstrzyknij AutoryzacjaTokenuFiltr
+    public KonfiguracjaZabezpieczen(DetaleUzytkownikówSerwis detaleUzytkownikówSerwis,
+                                    JwtAutoryzacjaEntryPoint JwtAutoryzacjaEntryPoint, // Wstrzyknij JwtAutoryzacjaEntryPoint
+                                    AutoryzacjaTokenuFiltr AutoryzacjaTokenuFiltr) { // Wstrzyknij AutoryzacjaTokenuFiltr
         this.detaleUzytkownikówSerwis = detaleUzytkownikówSerwis;
         this.JwtAutoryzacjaEntryPoint = JwtAutoryzacjaEntryPoint; // Przypisz
         this.AutoryzacjaTokenuFiltr = AutoryzacjaTokenuFiltr; // Przypisz
@@ -48,7 +48,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll() // Endpointy logowania/rejestracji
-                        .requestMatchers("/api/rejestr/**").permitAll() // Endpoint rejestracji
+                        .requestMatchers("/api/rejestracja/**").permitAll() // Endpoint rejestracji
                         // Możesz dodać inne publiczne ścieżki, np. Swagger UI
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated() // Wszystkie inne żądania wymagają uwierzytelnienia

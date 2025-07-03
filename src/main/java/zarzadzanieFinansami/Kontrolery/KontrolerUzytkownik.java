@@ -1,7 +1,7 @@
 package zarzadzanieFinansami.Kontrolery;
 
 // import zarzadzanieFinansami.DTO.UzytkownikDTO; // Ten import jest teraz problemem
-import zarzadzanieFinansami.DTO.logowanie.UzytkownikResponseDTO;
+import zarzadzanieFinansami.DTO.logowanie.UzytkownikOdpowiedzDTO;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -51,7 +51,7 @@ public class KontrolerUzytkownik {
             return ResponseEntity.notFound().build();
         }
         // Zwróć DTO zamiast encji
-        UzytkownikResponseDTO dto = mapToResponseDTO(uzytkownik); // Potrzebna metoda mapująca
+        UzytkownikOdpowiedzDTO dto = mapToResponseDTO(uzytkownik); // Potrzebna metoda mapująca
         return ResponseEntity.ok(dto);
     }
 
@@ -65,7 +65,7 @@ public class KontrolerUzytkownik {
         try {
             Uzytkownik newUzytkownik = uzytkownikUsluga.stworzUzytkownika(nazwa, email, password);
             // Zwróć DTO bez hasła i status 201 Created
-            UzytkownikResponseDTO dto = mapToResponseDTO(newUzytkownik);
+            UzytkownikOdpowiedzDTO dto = mapToResponseDTO(newUzytkownik);
             // Idealnie byłoby dodać URI do nowo utworzonego zasobu
             // URI location = URI.create("/api/uzytkownik/" + newUzytkownik.getId());
             // return ResponseEntity.created(location).body(dto);
@@ -79,11 +79,10 @@ public class KontrolerUzytkownik {
     // --- Endpoint GET /uzytkownik ---
     @GetMapping("/uzytkownik")
     // @PreAuthorize("hasRole('ADMIN')") // Dziedziczone z klasy
-
-    public ResponseEntity<List<UzytkownikResponseDTO>> znajdzUzytkownikow(){
+    public ResponseEntity<List<UzytkownikOdpowiedzDTO>> znajdzUzytkownikow(){
         List<Uzytkownik> uzytkownicy = uzytkownikUsluga.znajdzWszystkichUzytkownikow();
         // Zmapuj listę encji na listę DTO
-        List<UzytkownikResponseDTO> dtos = uzytkownicy.stream()
+        List<UzytkownikOdpowiedzDTO> dtos = uzytkownicy.stream()
                 .map(this::mapToResponseDTO) // Użyj metody mapującej
                 .collect(Collectors.toList());
         return ResponseEntity.ok(dtos);
@@ -113,7 +112,7 @@ public class KontrolerUzytkownik {
         try {
             Uzytkownik zaktualizowany = uzytkownikUsluga.zmienUzytkownika(id, nowaNazwa, nowyEmail, noweHaslo);
             // Zwróć zaktualizowany zasób jako DTO
-            UzytkownikResponseDTO dto = mapToResponseDTO(zaktualizowany);
+            UzytkownikOdpowiedzDTO dto = mapToResponseDTO(zaktualizowany);
             return ResponseEntity.ok(dto);
         } catch (jakarta.persistence.EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
@@ -123,11 +122,10 @@ public class KontrolerUzytkownik {
     }
 
     // --- Prywatna metoda pomocnicza do mapowania na DTO ---
-    // WAŻNE: Stwórz klasę UzytkownikResponseDTO, która NIE zawiera pola haslo!
-    private UzytkownikResponseDTO mapToResponseDTO(Uzytkownik uzytkownik) {
+    private UzytkownikOdpowiedzDTO mapToResponseDTO(Uzytkownik uzytkownik) {
         if (uzytkownik == null) return null;
         // Zakładając, że UzytkownikResponseDTO ma konstruktor (Long id, String name, String email, String rola)
-        return new UzytkownikResponseDTO(
+        return new UzytkownikOdpowiedzDTO(
                 uzytkownik.getId(),
                 uzytkownik.getName(),
                 uzytkownik.getEmail(),

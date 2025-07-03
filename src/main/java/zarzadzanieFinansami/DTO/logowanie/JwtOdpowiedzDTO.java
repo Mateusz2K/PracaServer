@@ -1,12 +1,12 @@
 package zarzadzanieFinansami.DTO.logowanie;
 
-public class JwtResponseDTO {
+public class JwtOdpowiedzDTO {
     private String token;
     private String type = "Bearer"; // Standardowy typ tokenu JWT
     private String nazwa; // Lub username, aby klient wiedział, dla kogo jest token
     // Możesz tu dodać inne informacje, np. ID użytkownika, role, jeśli potrzebne
 
-    public JwtResponseDTO(String accessToken, String nazwa) {
+    public JwtOdpowiedzDTO(String accessToken, String nazwa) {
         this.token = accessToken;
         this.nazwa = nazwa;
     }

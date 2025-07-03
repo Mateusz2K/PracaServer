@@ -3,7 +3,7 @@ package zarzadzanieFinansami.DTO.konto;
 import java.math.BigDecimal;
 
 // Możesz dodać walidacje, np. @Size dla nazwy
-public class KontoUpdateDTO {
+public class KontoAktualizacjaDTO {
     private String nazwa;
     private String typ;
     private BigDecimal bilans;

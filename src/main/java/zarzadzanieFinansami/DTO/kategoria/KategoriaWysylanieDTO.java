@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 
-public class KategoriaTworzenieDTO {
+public class KategoriaWysylanieDTO {
 
     @NotBlank(message = "Nazwa kategorii nie może być pusta.")
     private String nazwa;
