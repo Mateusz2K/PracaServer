@@ -19,12 +19,12 @@ import java.util.stream.Collectors; // Potrzebne do mapowania na DTO
 @RestController
 @RequestMapping("/api")
 @PreAuthorize("hasRole('ADMIN')") // Domyślnie wszystkie metody wymagają roli ADMIN
-public class KontrolerUzytkownik {
+public class UzytkownikKontroler {
 
     private final UzytkownikUsluga uzytkownikUsluga;
 
     @Autowired
-    public KontrolerUzytkownik(UzytkownikUsluga uzytkownikUsluga){
+    public UzytkownikKontroler(UzytkownikUsluga uzytkownikUsluga){
         this.uzytkownikUsluga = uzytkownikUsluga;
     }
 

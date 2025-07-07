@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.JWT; // Lub zarzadzanieFinansami.config
+package zarzadzanieFinansami.JWT; // Lub zarzadzanieFinansami.konfikuracja
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.config;
+package zarzadzanieFinansami.konfikuracja;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
-// import Twojego repozytorium i encji
 
 @Component
 public class AdminInitializer implements CommandLineRunner {
