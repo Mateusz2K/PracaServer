@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.konfikuracja;
+package zarzadzanieFinansami.konfiguracja;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;

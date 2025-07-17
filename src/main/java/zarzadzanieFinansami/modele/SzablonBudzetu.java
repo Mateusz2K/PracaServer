@@ -2,6 +2,7 @@
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,15 @@ public class SzablonBudzetu {
     @OneToMany(mappedBy = "szablonBudzetu", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<PozycjaSzablonuBudzetu> pozycjeSzablonu = new ArrayList<>();
 
-    // Pola dla reguły procentowej (np. 50/30/20) jako domyślne dla szablonu
+    // --- Pola definiujące domyślną regułę dla szablonu ---
+
+    // Określa, jaki rodzaj reguły ma być domyślnie proponowany przez ten szablon.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "typ_reguly")
+    private TypRegulyBudzetowejEnum typReguly;
+
+    // Domyślny podział procentowy. Może być zdefiniowany bezpośrednio (gdy typReguly = PROCENTOWA)
+    // lub być pusty, jeśli szablon opiera się na kwotach lub ręcznym wprowadzaniu.
     @Column(name = "procent_na_potrzeby")
     private Integer procentNaPotrzeby;
 
@@ -124,5 +133,13 @@ public class SzablonBudzetu {
 
     public void setProcentNaInwestycje(Integer procentNaInwestycje) {
         this.procentNaInwestycje = procentNaInwestycje;
+    }
+
+    public TypRegulyBudzetowejEnum getTypReguly() {
+        return typReguly;
+    }
+
+    public void setTypReguly(TypRegulyBudzetowejEnum typReguly) {
+        this.typReguly = typReguly;
     }
 }

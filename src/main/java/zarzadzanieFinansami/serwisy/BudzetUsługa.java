@@ -8,9 +8,12 @@ import zarzadzanieFinansami.DTO.budzet.BudzetWysylanieDTO;
 import zarzadzanieFinansami.DTO.budzet.BudzetOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuWysylanieDTO;
 import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.budzet.RegulaKwotowaDTO;
+import zarzadzanieFinansami.DTO.budzet.RegulaProcentoweDTO;
 import zarzadzanieFinansami.magazyn.*;
 import zarzadzanieFinansami.modele.*;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
+import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 
@@ -75,59 +78,22 @@ public class BudzetUsługa {
         budzet.setPrzewidywanyDochod(dto.getPrzewidywanyDochod());
         budzet.setAktywny(true); // Domyślnie aktywny
 
+        // Krok 1: Zastosuj ustawienia z szablonu jako domyślne (jeśli istnieje)
         if (dto.getSzablonId() != null) {
             SzablonBudzetu szablon = magazynSzablonuBudzetu.findById(dto.getSzablonId())
                     .orElseThrow(() -> new DaneNieZnalesionoExeption("Szablon budżetu o ID: " + dto.getSzablonId() + " nie znaleziony."));
-            // Sprawdzenie czy szablon jest systemowy lub należy do użytkownika
-            if (szablon.getUzytkownik() != null && !szablon.getUzytkownik().getId().equals(uzytkownik.getId())) {
+            if (szablon.getUzytkownik() != null && !szablon.getUzytkownik().getId().equals(uzytkownik.getId()) && !szablon.isCzyPubliczny()) {
                 throw new DaneNieZnalesionoExeption("Nie masz uprawnień do użycia tego szablonu.");
             }
             budzet.setOpartyNaSzablonie(szablon);
-            // Można tu zaaplikować pozycje z szablonu, jeśli nie są podane w DTO
-            // Lub jeśli są podane, to je użyć. Na razie zakładamy, że DTO ma priorytet.
-            if (szablon.getProcentNaPotrzeby() != null) budzet.setProcentNaPotrzeby(szablon.getProcentNaPotrzeby());
-            if (szablon.getProcentNaZachcianki() != null) budzet.setProcentNaZachcianki(szablon.getProcentNaZachcianki());
-            if (szablon.getProcentNaInwestycje() != null) budzet.setProcentNaInwestycje(szablon.getProcentNaInwestycje());
+            zastosujRegulyZSzablonu(budzet, szablon);
         }
 
-        // Ustawienia reguły procentowej z DTO (mają priorytet nad szablonem)
-        if(dto.isZastosujReguleProcentowa()){
-            if(dto.getProcentNaPotrzeby() != null) budzet.setProcentNaPotrzeby(dto.getProcentNaPotrzeby());
-            if(dto.getProcentNaZachcianki() != null) budzet.setProcentNaZachcianki(dto.getProcentNaZachcianki());
-            if(dto.getProcentNaInwestycje() != null) budzet.setProcentNaInwestycje(dto.getProcentNaInwestycje());
-        }
+        // Krok 2: Zastosuj reguły z DTO, które mają priorytet nad szablonem
+        zastosujRegulyBudzetowe(budzet, dto);
 
-
-        BigDecimal sumaAlokowana = BigDecimal.ZERO;
-        if (dto.getPozycjeBudzetu() != null && !dto.getPozycjeBudzetu().isEmpty()) {
-            for (PozycjaBudzetuWysylanieDTO pozDto : dto.getPozycjeBudzetu()) {
-                Kategoria kategoria = magazynKategorii.findByUzytkownikAndId(uzytkownik, pozDto.getKategoriaId())
-                        .orElseThrow(() -> new DaneNieZnalesionoExeption("Kategoria o ID: " + pozDto.getKategoriaId() + " nie znaleziona dla użytkownika."));
-
-                PozycjaBudzetu pozycja = new PozycjaBudzetu();
-                pozycja.setKategoria(kategoria);
-                pozycja.setTypAlokacji(pozDto.getTypAlokacji());
-
-                if (pozDto.getTypAlokacji() == TypAlokacjiEnum.PROCENTOWA) {
-                    if (pozDto.getProcentAlokowany() == null || dto.getPrzewidywanyDochod() == null) {
-                        throw new IllegalArgumentException("Procent alokowany i przewidywany dochód są wymagane dla alokacji procentowej.");
-                    }
-                    pozycja.setProcentAlokowany(pozDto.getProcentAlokowany());
-                    BigDecimal kwota = dto.getPrzewidywanyDochod()
-                            .multiply(pozDto.getProcentAlokowany())
-                            .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
-                    pozycja.setKwotaAlokowana(kwota);
-                } else { // KWOTOWA
-                    if (pozDto.getKwotaAlokowana() == null) {
-                        throw new IllegalArgumentException("Kwota alokowana jest wymagana dla alokacji kwotowej.");
-                    }
-                    pozycja.setKwotaAlokowana(pozDto.getKwotaAlokowana());
-                }
-                sumaAlokowana = sumaAlokowana.add(pozycja.getKwotaAlokowana());
-                budzet.dodajPozycjeBudzetu(pozycja);
-            }
-        }
-        budzet.setSumaAlokowana(sumaAlokowana);
+        // Krok 3: Przetwórz i dodaj pozycje budżetu z DTO
+        zastosujPozycjeBudzetu(budzet, dto, uzytkownik);
 
         Budzet zapisanyBudzet = magazynBudzetu.save(budzet);
         return mapToBudzetResponseDTO(zapisanyBudzet, uzytkownik);
@@ -169,24 +135,90 @@ public class BudzetUsługa {
         budzet.setDataKoncowa(dto.getDataKoncowa());
         budzet.setOkresowosc(dto.getOkresowosc());
         budzet.setPrzewidywanyDochod(dto.getPrzewidywanyDochod());
-        // aktywny, szablonId - zakładamy, że nie są aktualizowane tą metodą, lub wymagają osobnych endpointów/logiki
 
-        if(dto.isZastosujReguleProcentowa()){
-            if(dto.getProcentNaPotrzeby() != null) budzet.setProcentNaPotrzeby(dto.getProcentNaPotrzeby());
-            if(dto.getProcentNaZachcianki() != null) budzet.setProcentNaZachcianki(dto.getProcentNaZachcianki());
-            if(dto.getProcentNaInwestycje() != null) budzet.setProcentNaInwestycje(dto.getProcentNaInwestycje());
-        } else { // Jeśli odznaczono, można wyzerować
-            budzet.setProcentNaPotrzeby(null);
-            budzet.setProcentNaZachcianki(null);
-            budzet.setProcentNaInwestycje(null);
+        // Zastosuj reguły z DTO
+        zastosujRegulyBudzetowe(budzet, dto);
+
+        // Aktualizacja pozycji - usuwamy stare i dodajemy nowe na podstawie DTO
+        budzet.getPozycjeBudzetu().clear(); // Hibernate zajmie się usunięciem starych (orphanRemoval=true)
+        budzet.setSumaAlokowana(BigDecimal.ZERO);
+        zastosujPozycjeBudzetu(budzet, dto, uzytkownik);
+
+        Budzet zaktualizowanyBudzet = magazynBudzetu.save(budzet);
+        return mapToBudzetResponseDTO(zaktualizowanyBudzet, uzytkownik);
+    }
+
+
+    @Transactional
+    public void usunBudzet(Long budzetId, String username) {
+        Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
+        Budzet budzet = magazynBudzetu.findByIdAndUzytkownik(budzetId, uzytkownik)
+                .orElseThrow(() -> new DaneNieZnalesionoExeption("Budżet o ID: " + budzetId + " nie znaleziony lub nie należy do użytkownika."));
+        magazynBudzetu.delete(budzet);
+    }
+
+    // --- METODY POMOCNICZE ---
+
+    private void zastosujRegulyZSzablonu(Budzet budzet, SzablonBudzetu szablon) {
+        budzet.setTypReguly(szablon.getTypReguly());
+        // Szablon przechowuje tylko procenty, nawet jeśli jego typ to KWOTOWY (bo kwoty nie mają sensu bez dochodu)
+        // Dlatego po prostu kopiujemy procenty.
+        budzet.setProcentNaPotrzeby(szablon.getProcentNaPotrzeby());
+        budzet.setProcentNaZachcianki(szablon.getProcentNaZachcianki());
+        budzet.setProcentNaInwestycje(szablon.getProcentNaInwestycje());
+    }
+
+    /**
+     * Stosuje reguły budżetowe (procentowe lub kwotowe) z DTO do encji Budzet.
+     * Dane z DTO mają zawsze priorytet nad danymi z szablonu.
+     */
+    private void zastosujRegulyBudzetowe(Budzet budzet, BudzetWysylanieDTO dto) {
+        budzet.setTypReguly(dto.getTypReguly());
+
+        if (dto.getTypReguly() == TypRegulyBudzetowejEnum.PROCENTOWA && dto.getRegulaProcentowa() != null) {
+            RegulaProcentoweDTO regula = dto.getRegulaProcentowa();
+            if (regula.isZastosuj()) {
+                budzet.setProcentNaPotrzeby(regula.getProcentNaPotrzeby());
+                budzet.setProcentNaZachcianki(regula.getProcentNaZachcianki());
+                budzet.setProcentNaInwestycje(regula.getProcentNaInwestycje());
+            } else {
+                // Jeśli 'zastosuj' jest false, czyścimy reguły
+                wyczyscProcentyRegul(budzet);
+            }
+        } else if (dto.getTypReguly() == TypRegulyBudzetowejEnum.KWOTOWA && dto.getRegulaKwotowa() != null) {
+            // Dla reguły kwotowej, przeliczamy kwoty na procenty i zapisujemy w encji
+            przeliczReguleKwotowaNaProcenty(budzet, dto.getRegulaKwotowa());
+        } else {
+            // Jeśli typReguly == BRAK lub odpowiedni obiekt DTO jest null, czyścimy reguły
+            wyczyscProcentyRegul(budzet);
+        }
+    }
+
+    private void wyczyscProcentyRegul(Budzet budzet) {
+        budzet.setProcentNaPotrzeby(null);
+        budzet.setProcentNaZachcianki(null);
+        budzet.setProcentNaInwestycje(null);
+    }
+
+    private void przeliczReguleKwotowaNaProcenty(Budzet budzet, RegulaKwotowaDTO regula) {
+        BigDecimal dochod = budzet.getPrzewidywanyDochod();
+        if (dochod == null || dochod.compareTo(BigDecimal.ZERO) == 0) {
+            // Nie można policzyć procentów bez dochodu, więc czyścimy
+            wyczyscProcentyRegul(budzet);
+            return;
         }
 
+        BigDecimal kwotaPotrzeby = regula.getKwotaNaPotrzeby() != null ? regula.getKwotaNaPotrzeby() : BigDecimal.ZERO;
+        BigDecimal kwotaZachcianki = regula.getKwotaNaZachcianki() != null ? regula.getKwotaNaZachcianki() : BigDecimal.ZERO;
+        BigDecimal kwotaInwestycje = regula.getKwotaNaInwestycje() != null ? regula.getKwotaNaInwestycje() : BigDecimal.ZERO;
 
-        // Aktualizacja pozycji - najprościej usunąć stare i dodać nowe
-        // Bardziej zaawansowane byłoby porównywanie i aktualizowanie istniejących
-        budzet.getPozycjeBudzetu().clear(); // Hibernate zajmie się usunięciem starych (orphanRemoval=true)
-        BigDecimal nowaSumaAlokowana = BigDecimal.ZERO;
+        budzet.setProcentNaPotrzeby(kwotaPotrzeby.multiply(new BigDecimal("100")).divide(dochod, 0, RoundingMode.HALF_UP).intValue());
+        budzet.setProcentNaZachcianki(kwotaZachcianki.multiply(new BigDecimal("100")).divide(dochod, 0, RoundingMode.HALF_UP).intValue());
+        budzet.setProcentNaInwestycje(kwotaInwestycje.multiply(new BigDecimal("100")).divide(dochod, 0, RoundingMode.HALF_UP).intValue());
+    }
 
+    private void zastosujPozycjeBudzetu(Budzet budzet, BudzetWysylanieDTO dto, Uzytkownik uzytkownik) {
+        BigDecimal sumaAlokowana = BigDecimal.ZERO;
         if (dto.getPozycjeBudzetu() != null && !dto.getPozycjeBudzetu().isEmpty()) {
             for (PozycjaBudzetuWysylanieDTO pozDto : dto.getPozycjeBudzetu()) {
                 Kategoria kategoria = magazynKategorii.findByUzytkownikAndId(uzytkownik, pozDto.getKategoriaId())
@@ -211,24 +243,13 @@ public class BudzetUsługa {
                     }
                     pozycja.setKwotaAlokowana(pozDto.getKwotaAlokowana());
                 }
-                nowaSumaAlokowana = nowaSumaAlokowana.add(pozycja.getKwotaAlokowana());
+                sumaAlokowana = sumaAlokowana.add(pozycja.getKwotaAlokowana());
                 budzet.dodajPozycjeBudzetu(pozycja);
             }
         }
-        budzet.setSumaAlokowana(nowaSumaAlokowana);
-
-        Budzet zaktualizowanyBudzet = magazynBudzetu.save(budzet);
-        return mapToBudzetResponseDTO(zaktualizowanyBudzet, uzytkownik);
+        budzet.setSumaAlokowana(sumaAlokowana);
     }
 
-
-    @Transactional
-    public void usunBudzet(Long budzetId, String username) {
-        Uzytkownik uzytkownik = pobierzBiezacegoUzytkownika(username);
-        Budzet budzet = magazynBudzetu.findByIdAndUzytkownik(budzetId, uzytkownik)
-                .orElseThrow(() -> new DaneNieZnalesionoExeption("Budżet o ID: " + budzetId + " nie znaleziony lub nie należy do użytkownika."));
-        magazynBudzetu.delete(budzet);
-    }
 
     private BudzetOdpowiedzDTO mapToBudzetResponseDTO(Budzet budzet, Uzytkownik uzytkownik) {
         List<PozycjaBudzetuOdpowiedzDTO> pozycjeDto = new ArrayList<>();

@@ -2,6 +2,7 @@
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
 import zarzadzanieFinansami.modele.enumeracje.OkresowoscEnum; // Zakładając, że chcesz użyć istniejącego enuma
 
 import java.math.BigDecimal;
@@ -51,7 +52,15 @@ public class Budzet {
     @JoinColumn(name = "szablon_id") // Opcjonalne, jeśli budżet bazuje na szablonie
     private SzablonBudzetu opartyNaSzablonie;
 
-    // Pola dla reguły procentowej (np. 50/30/20)
+    // --- Pola definiujące regułę budżetową ---
+
+    // Określa, jaka metoda została użyta do pierwotnego podziału budżetu.
+    @Enumerated(EnumType.STRING)
+    @Column(name = "typ_reguly")
+    private TypRegulyBudzetowejEnum typReguly;
+
+    // Przechowuje wynikowy podział procentowy. Wypełniane bezpośrednio,
+    // gdy typReguly to PROCENTOWA, lub obliczane, gdy typReguly to KWOTOWA.
     @Column(name = "procent_na_potrzeby")
     private Integer procentNaPotrzeby; // Przechowujemy jako Integer (np. 50 dla 50%)
 
@@ -191,5 +200,13 @@ public class Budzet {
 
     public void setProcentNaInwestycje(Integer procentNaInwestycje) {
         this.procentNaInwestycje = procentNaInwestycje;
+    }
+
+    public TypRegulyBudzetowejEnum getTypReguly() {
+        return typReguly;
+    }
+
+    public void setTypReguly(TypRegulyBudzetowejEnum typReguly) {
+        this.typReguly = typReguly;
     }
 }
