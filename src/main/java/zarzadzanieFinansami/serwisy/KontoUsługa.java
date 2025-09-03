@@ -92,14 +92,6 @@ public class KontoUsługa {
                 throw new IllegalArgumentException("Nieprawidłowa wartość dla typu konta");
             }
         }
-//        jeśli w wymaganiach potrzeba zmianę waluty
-//        if (updateDTO.getWaluta() != null && !updateDTO.getWaluta().isBlank()) {
-//            try {
-//                kontoDoAktualizacji.setWaluta(WalutaEnum.valueOf(updateDTO.getWaluta().toUpperCase()));
-//            } catch (IllegalArgumentException e) {
-//                throw new IllegalArgumentException("Nieprawidłowa wartość dla waluty: " + updateDTO.getWaluta());
-//            }
-//        }
         if (updateDTO.getBilans() != null) {
             kontoDoAktualizacji.setBilans(updateDTO.getBilans());
         }

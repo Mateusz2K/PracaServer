@@ -6,6 +6,8 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import zarzadzanieFinansami.modele.enumeracje.CelStatusEnum;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -25,7 +27,11 @@ public class CelWysylanieDTO {
     @Size(max = 500, message = "Opis może mieć maksymalnie 500 znaków.")
     private String opis;
 
-    // Gettery i Settery
+    @NotNull
+    private Integer kontoId; // ID konta, na którym będą gromadzone oszczędności
+
+
+    // Gettery i Settery ...
     public String getNazwaCelu() {
         return nazwaCelu;
     }
@@ -57,4 +63,13 @@ public class CelWysylanieDTO {
     public void setOpis(String opis) {
         this.opis = opis;
     }
+
+    public Integer getKontoId() {
+        return kontoId;
+    }
+
+    public void setKontoId(Integer kontoId) {
+        this.kontoId = kontoId;
+    }
+
 }

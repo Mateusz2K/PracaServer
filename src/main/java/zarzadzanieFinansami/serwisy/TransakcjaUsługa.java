@@ -1,6 +1,9 @@
 package zarzadzanieFinansami.serwisy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.ContextStartedEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zarzadzanieFinansami.DTO.transakcja.TransakcjaTworzenieDTO;
@@ -15,12 +18,14 @@ import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class TransakcjaUsługa {
@@ -28,7 +33,6 @@ public class TransakcjaUsługa {
     private final MagazynTransakcji magazynTransakcji;
     private final MagazynKonta magazynKonta;
     private final MagazynKategorii magazynKategorii;
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
 
     @Autowired
@@ -36,6 +40,10 @@ public class TransakcjaUsługa {
         this.magazynTransakcji = magazynTransakcji;
         this.magazynKonta = magazynKonta;
         this.magazynKategorii = magazynKategorii;
+    }
+
+    public Optional<Transakcja> pobierzTransakcjePoId(Integer transakcjaId) {
+        return magazynTransakcji.findById(transakcjaId);
     }
     @Transactional // Kluczowe dla spójności danych!
     public Transakcja dodajTransakcjeDoKonta(Integer kontoId, TransakcjaTworzenieDTO dto, Uzytkownik currentUser) {
@@ -78,22 +86,6 @@ public class TransakcjaUsługa {
         return magazynTransakcji.save(nowaTransakcja); // Zapisz nową transakcję
     }
 
-    @Transactional(readOnly = true) // Operacja tylko do odczytu
-    public List<Transakcja> pobierzTransakcjeDlaKonta(Integer kontoId, Uzytkownik currentUser) {
-        Konto konto = magazynKonta.findById(kontoId)
-                .orElseThrow(() -> new DaneNieZnalesionoExeption("Konto o ID " + kontoId + " nie zostało znalezione."));
-
-        if (!Objects.equals(konto.getUzytkownik().getId(), currentUser.getId())) {
-            throw new ForbiddenAccessException("Brak uprawnień do wyświetlenia transakcji dla tego konta.");
-        }
-        // Możesz potrzebować metody w MagazynTransakcji lub wykorzystać relację
-        // return magazynTransakcji.findByKontoId(kontoId); // Jeśli masz taką metodę
-        return konto.getTransakcje(); // Jeśli relacja Konto -> Transakcje jest EAGER lub zainicjowana
-        // Dla LAZY, to wywoła dodatkowe zapytanie, co jest OK w transakcji.
-        // Upewnij się, że masz `private List<Transakcja> transakcje;` w encji Konto
-        // z `@OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, fetch = FetchType.LAZY)`
-    }
-
 
     @Transactional
     public void usunTransakcje(Integer transakcjaId, Uzytkownik currentUser) {
@@ -118,150 +110,69 @@ public class TransakcjaUsługa {
     }
 
     @Transactional(readOnly = true)
-    public List<Transakcja> pobierzTransakcjeDlaOkresu(String dataOdStr, String dataDoStr, Uzytkownik currentUser) {
-        LocalDate dataOd;
-        LocalDate dataDo;
-
-        try {
-            dataOd = LocalDate.parse(dataOdStr, DATE_FORMATTER);
-            dataDo = LocalDate.parse(dataDoStr, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Nieprawidłowy format daty. Oczekiwano formatu YYYY-MM-DD (np. 2023-01-15). Błąd: " + e.getMessage());
-        }
-
-        if (dataOd.isAfter(dataDo)) {
-            throw new IllegalArgumentException("Data 'od' (" + dataOdStr + ") nie może być późniejsza niż data 'do' (" + dataDoStr + ").");
-        }
-
-        return magazynTransakcji.findByKonto_UzytkownikAndDataBetweenOrderByDataDesc(currentUser, dataOd, dataDo);
-    }
-    @Transactional(readOnly = true)
-    public List<Transakcja> pobierzTransakcjeDlaKontaWOkresie(Integer kontoId, String dataOdStr, String dataDoStr, Uzytkownik currentUser) {
-        // 1. Znajdź konto
-        Konto konto = magazynKonta.findById(kontoId)
-                .orElseThrow(() -> new DaneNieZnalesionoExeption("Konto o ID " + kontoId + " nie zostało znalezione."));
-
-        // 2. Weryfikuj, czy zalogowany użytkownik jest właścicielem konta
-        // Użyj .equals() do porównywania obiektów Integer, a nie ==
-        if (konto.getUzytkownik() == null || !konto.getUzytkownik().getId().equals(currentUser.getId())) {
-            throw new ForbiddenAccessException("Brak uprawnień do wyświetlenia transakcji dla tego konta.");
-        }
-
-        // 3. Parsuj daty (tak jak w metodzie pobierzTransakcjeDlaOkresu)
-        LocalDate dataOd;
-        LocalDate dataDo;
-        try {
-            dataOd = LocalDate.parse(dataOdStr, DATE_FORMATTER);
-            dataDo = LocalDate.parse(dataDoStr, DATE_FORMATTER);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Nieprawidłowy format daty. Oczekiwano formatu YYYY-MM-DD (np. 2023-01-15). Błąd: " + e.getMessage());
-        }
-
-        if (dataOd.isAfter(dataDo)) {
-            throw new IllegalArgumentException("Data 'od' (" + dataOdStr + ") nie może być późniejsza niż data 'do' (" + dataDoStr + ").");
-        }
-
-        // 4. Wywołaj nową metodę repozytorium
-        return magazynTransakcji.findByKontoAndDataBetweenOrderByDataDesc(konto, dataOd, dataDo);
-    }
-    @Transactional(readOnly = true)
     public List<Transakcja> pobierzTransakcjeWedlugKryteriow(
             Integer kategoriaId, // ID kategorii z DTO
             Integer kontoId,     // ID konta z DTO
-            String dataOdStr,
-            String dataDoStr,
+            LocalDate dataOd,
+            LocalDate dataDo,
+            TypTransakcjiEnum typTransakcji,
             Uzytkownik currentUser) {
-
-        LocalDate dataOd = null;
-        LocalDate dataDo = null;
-
-        if (dataOdStr != null && !dataOdStr.trim().isEmpty()) {
-            try {
-                dataOd = LocalDate.parse(dataOdStr, DATE_FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Nieprawidłowy format daty 'od'. Oczekiwano formatu dd.MM.yyyy. Błąd: " + e.getMessage());
-            }
-        }
-
-        if (dataDoStr != null && !dataDoStr.trim().isEmpty()) {
-            try {
-                dataDo = LocalDate.parse(dataDoStr, DATE_FORMATTER);
-            } catch (DateTimeParseException e) {
-                throw new IllegalArgumentException("Nieprawidłowy format daty 'do'. Oczekiwano formatu dd.MM.yyyy. Błąd: " + e.getMessage());
-            }
-        }
-
-        if (dataOd != null && dataDo != null && dataOd.isAfter(dataDo)) {
-            throw new IllegalArgumentException("Data 'od' (" + dataOdStr + ") nie może być późniejsza niż data 'do' (" + dataDoStr + ").");
-        }
-
-        Kategoria kategoria = null;
-        if (kategoriaId != null) {
-            kategoria = magazynKategorii.findById(kategoriaId)
-                    .orElseThrow(() -> new DaneNieZnalesionoExeption("Kategoria o ID " + kategoriaId + " nie została znaleziona."));
-            // Opcjonalnie: Weryfikacja, czy kategoria należy do użytkownika, jeśli jest taka potrzeba
-            // if (kategoria.getUzytkownik() != null && !Objects.equals(kategoria.getUzytkownik().getId(), currentUser.getId())) {
-            //     throw new ForbiddenAccessException("Brak uprawnień do użycia tej kategorii.");
-            // }
-        }
-
+    
+        // --- Walidacja i przygotowanie danych ---
+    
+        // Sprawdzenie dostępu do konta, jeśli zostało podane
         if (kontoId != null) {
-            // Scenariusz: Podano ID konta
             Konto konto = magazynKonta.findById(kontoId)
                     .orElseThrow(() -> new DaneNieZnalesionoExeption("Konto o ID " + kontoId + " nie zostało znalezione."));
-
-            if (konto.getUzytkownik() == null || !konto.getUzytkownik().getId().equals(currentUser.getId())) {
+    
+            if (!Objects.equals(konto.getUzytkownik().getId(), currentUser.getId())) {
                 throw new ForbiddenAccessException("Brak uprawnień do wyświetlenia transakcji dla tego konta.");
             }
-
-            if (kategoria != null) {
-                // Podano konto i kategorię
-                if (dataOd != null && dataDo != null) {
-                    return magazynTransakcji.findByKontoAndKategoriaAndDataBetweenOrderByDataDesc(konto, kategoria, dataOd, dataDo);
-                } else if (dataOd != null) {
-                    return magazynTransakcji.findByKontoAndKategoriaAndDataGreaterThanEqualOrderByDataDesc(konto, kategoria, dataOd);
-                } else if (dataDo != null) {
-                    return magazynTransakcji.findByKontoAndKategoriaAndDataLessThanEqualOrderByDataDesc(konto, kategoria, dataDo);
-                } else {
-                    return magazynTransakcji.findByKontoAndKategoriaOrderByDataDesc(konto, kategoria);
-                }
-            } else {
-                // Podano konto, ale nie kategorię
-                if (dataOd != null && dataDo != null) {
-                    return magazynTransakcji.findByKontoAndDataBetweenOrderByDataDesc(konto, dataOd, dataDo);
-                } else if (dataOd != null) {
-                    return magazynTransakcji.findByKontoAndDataGreaterThanEqualOrderByDataDesc(konto, dataOd);
-                } else if (dataDo != null) {
-                    return magazynTransakcji.findByKontoAndDataLessThanEqualOrderByDataDesc(konto, dataDo);
-                } else {
-                    return magazynTransakcji.findByKontoOrderByDataDesc(konto);
-                }
-            }
-        } else {
-            // Scenariusz: Nie podano ID konta (wszystkie konta użytkownika)
-            if (kategoria != null) {
-                // Nie podano konta, ale podano kategorię
-                if (dataOd != null && dataDo != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndKategoriaAndDataBetweenOrderByDataDesc(currentUser, kategoria, dataOd, dataDo);
-                } else if (dataOd != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndKategoriaAndDataGreaterThanEqualOrderByDataDesc(currentUser, kategoria, dataOd);
-                } else if (dataDo != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndKategoriaAndDataLessThanEqualOrderByDataDesc(currentUser, kategoria, dataDo);
-                } else {
-                    return magazynTransakcji.findByKonto_UzytkownikAndKategoriaOrderByDataDesc(currentUser, kategoria);
-                }
-            } else {
-                // Nie podano konta ani kategorii
-                if (dataOd != null && dataDo != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndDataBetweenOrderByDataDesc(currentUser, dataOd, dataDo);
-                } else if (dataOd != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndDataGreaterThanEqualOrderByDataDesc(currentUser, dataOd);
-                } else if (dataDo != null) {
-                    return magazynTransakcji.findByKonto_UzytkownikAndDataLessThanEqualOrderByDataDesc(currentUser, dataDo);
-                } else {
-                    return magazynTransakcji.findByKonto_UzytkownikOrderByDataDesc(currentUser);
-                }
-            }
         }
+    
+        // Sprawdzenie, czy kategoria istnieje, jeśli została podana
+        if (kategoriaId != null) {
+            if (!magazynKategorii.existsById(kategoriaId)) {
+                throw new DaneNieZnalesionoExeption("Kategoria o ID " + kategoriaId + " nie została znaleziona.");
+            }
+            // Można tu dodać weryfikację, czy kategoria należy do użytkownika, jeśli jest taka relacja
+//            if(!magazynKategorii.findById(kategoriaId).get().getUzytkownik().equals(currentUser)){
+//                throw new ForbiddenAccessException("Brak uprawnień do wyświetlenia transakcji dla tej kategorii.");
+//            }
+        }
+    
+        // --- Dynamiczne budowanie zapytania za pomocą Specification ---
+        return magazynTransakcji.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // Jawne złączenie (join) z encją Konto dla większej kontroli i czytelności
+            Join<Transakcja, Konto> kontoJoin = root.join("konto");
+
+            // Podstawowy warunek: transakcje muszą należeć do bieżącego użytkownika
+            predicates.add(cb.equal(kontoJoin.get("uzytkownik"), currentUser));
+    
+            if (kontoId != null) {
+                predicates.add(cb.equal(kontoJoin.get("id"), kontoId));
+            }
+            if (kategoriaId != null) {
+                predicates.add(cb.equal(root.get("kategoria").get("id"), kategoriaId));
+            }
+            if (typTransakcji != null) {
+                predicates.add(cb.equal(root.get("typ"), typTransakcji));
+            }
+    
+            // Filtrowanie po dacie
+            if (dataOd != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("data"), dataOd));
+            }
+            if (dataDo != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("data"), dataDo));
+            }
+    
+            query.orderBy(cb.desc(root.get("data"))); // Sortowanie wyników
+            return cb.and(predicates.toArray(new Predicate[0]));
+        });
     }
+
+
 }

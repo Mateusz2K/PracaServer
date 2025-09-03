@@ -8,23 +8,27 @@ import java.time.LocalDateTime;
 @Table(name = "powiadomienia")
 public class Powiadomienia {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String wiadomosc;
-    @Column(nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
-    private LocalDateTime wygenerowany_czas;
+    @Column(name = "wygenerowany_czas", nullable = false, updatable = false)
+    private LocalDateTime wygenerowanyCzas;
     private boolean czyPrzeczytane = false;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "urytkownik_id")
+    @JoinColumn(name = "uzytkownik_id")
     private Uzytkownik uzytkownik;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "typ_powiadomienia_id")
     private TypPowiadomienia typPowiadomienia;
 
-    public Powiadomienia(String wiadomosc, LocalDateTime wygenerowany_czas, boolean czyPrzeczytane, Uzytkownik uzytkownik, TypPowiadomienia typPowiadomienia) {
+    @PrePersist
+    protected void onCreate() {
+        this.wygenerowanyCzas = LocalDateTime.now();
+    }
+
+    public Powiadomienia(String wiadomosc, boolean czyPrzeczytane, Uzytkownik uzytkownik, TypPowiadomienia typPowiadomienia) {
         this.wiadomosc = wiadomosc;
-        this.wygenerowany_czas = wygenerowany_czas;
         this.czyPrzeczytane = czyPrzeczytane;
         this.uzytkownik = uzytkownik;
         this.typPowiadomienia = typPowiadomienia;
@@ -49,12 +53,12 @@ public class Powiadomienia {
         this.wiadomosc = wiadomosc;
     }
 
-    public LocalDateTime getWygenerowany_czas() {
-        return wygenerowany_czas;
+    public LocalDateTime getWygenerowanyCzas() {
+        return wygenerowanyCzas;
     }
 
-    public void setWygenerowany_czas(LocalDateTime wygenerowany_czas) {
-        this.wygenerowany_czas = wygenerowany_czas;
+    public void setWygenerowanyCzas(LocalDateTime wygenerowanyCzas) {
+        this.wygenerowanyCzas = wygenerowanyCzas;
     }
 
     public boolean isCzyPrzeczytane() {

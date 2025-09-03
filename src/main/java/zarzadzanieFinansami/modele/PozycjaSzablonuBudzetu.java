@@ -33,7 +33,7 @@ public class PozycjaSzablonuBudzetu {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typ_alokacji", nullable = false)
-    private TypAlokacjiEnum TypAlokacjiEnum;
+    private TypAlokacjiEnum typAlokacji;
 
     @Column(name = "procent_alokowany")
     private BigDecimal procentAlokowany; // Np. 10 dla 10%
@@ -58,8 +58,8 @@ public class PozycjaSzablonuBudzetu {
         return szablonBudzetu;
     }
 
-    public void setSzablonBudzetu(SzablonBudzetu SzablonBudzetu) {
-        this.szablonBudzetu = SzablonBudzetu;
+    public void setSzablonBudzetu(SzablonBudzetu szablonBudzetu) {
+        this.szablonBudzetu = szablonBudzetu;
     }
 
     public Kategoria getKategoria() {
@@ -78,12 +78,12 @@ public class PozycjaSzablonuBudzetu {
         this.metaKategoriaNazwa = metaKategoriaNazwa;
     }
 
-    public TypAlokacjiEnum getTypAlokacjiEnum() {
-        return TypAlokacjiEnum;
+    public TypAlokacjiEnum getTypAlokacji() {
+        return typAlokacji;
     }
 
-    public void setTypAlokacjiEnum(TypAlokacjiEnum TypAlokacjiEnum) {
-        this.TypAlokacjiEnum = TypAlokacjiEnum;
+    public void setTypAlokacji(TypAlokacjiEnum typAlokacji) {
+        this.typAlokacji = typAlokacji;
     }
 
     public BigDecimal getProcentAlokowany() {

@@ -4,7 +4,7 @@ package zarzadzanieFinansami.serwisy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import zarzadzanieFinansami.DTO.budzet.RegulaProcentoweDTO;
+import zarzadzanieFinansami.DTO.budzet.RegulaProcentowaDTO;
 import zarzadzanieFinansami.DTO.budzet.szablon.PozycjaSzablonuBudzetuWysylanieDTO;
 import zarzadzanieFinansami.DTO.budzet.szablon.PozycjaSzablonuBudzetuOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.budzet.szablon.SzablonBudzetuWysylanieDTO;
@@ -17,12 +17,10 @@ import zarzadzanieFinansami.modele.PozycjaSzablonuBudzetu;
 import zarzadzanieFinansami.modele.SzablonBudzetu;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
-import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.DuplikatException;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,7 +75,7 @@ public class SzablonBudzetuUsługa {
                     pozycja.setKategoria(kategoria);
                 }
                 pozycja.setMetaKategoriaNazwa(pozDto.getMetaKategoriaNazwa());
-                pozycja.setTypAlokacjiEnum(pozDto.getTypAlokacji());
+                pozycja.setTypAlokacji(pozDto.getTypAlokacji());
                 pozycja.setProcentAlokowany(pozDto.getProcentAlokowany());
                 pozycja.setKwotaAlokowana(pozDto.getKwotaAlokowana());
                 szablon.dodajPozycjeSzablonu(pozycja);
@@ -107,7 +105,7 @@ public class SzablonBudzetuUsługa {
                 // lub linkowane do predefiniowanych globalnych kategorii (jeśli takie istnieją)
                 // Na razie zakładamy, że metaKategoriaNazwa jest głównym identyfikatorem pozycji w szablonie systemowym.
                 pozycja.setMetaKategoriaNazwa(pozDto.getMetaKategoriaNazwa());
-                pozycja.setTypAlokacjiEnum(pozDto.getTypAlokacji());
+                pozycja.setTypAlokacji(pozDto.getTypAlokacji());
                 pozycja.setProcentAlokowany(pozDto.getProcentAlokowany());
                 pozycja.setKwotaAlokowana(pozDto.getKwotaAlokowana());
                 szablon.dodajPozycjeSzablonu(pozycja);
@@ -162,7 +160,7 @@ public class SzablonBudzetuUsługa {
                     p.getKategoria() != null ? p.getKategoria().getId() : null,
                     p.getKategoria() != null ? p.getKategoria().getNazwa() : null,
                     p.getMetaKategoriaNazwa(),
-                    p.getTypAlokacjiEnum(),
+                    p.getTypAlokacji(),
                     p.getProcentAlokowany(),
                     p.getKwotaAlokowana()
             ))
@@ -216,7 +214,7 @@ public class SzablonBudzetuUsługa {
                     nowaPozycja.setKategoria(kategoria);
                 }
                 nowaPozycja.setMetaKategoriaNazwa(pozycjaDto.getMetaKategoriaNazwa());
-                nowaPozycja.setTypAlokacjiEnum(pozycjaDto.getTypAlokacji());
+                nowaPozycja.setTypAlokacji(pozycjaDto.getTypAlokacji());
                 nowaPozycja.setProcentAlokowany(pozycjaDto.getProcentAlokowany());
                 nowaPozycja.setKwotaAlokowana(pozycjaDto.getKwotaAlokowana());
 
@@ -242,7 +240,7 @@ public class SzablonBudzetuUsługa {
         szablon.setTypReguly(dto.getTypReguly());
 
         if (dto.getTypReguly() == TypRegulyBudzetowejEnum.PROCENTOWA && dto.getRegulaProcentowa() != null) {
-            RegulaProcentoweDTO regula = dto.getRegulaProcentowa();
+            RegulaProcentowaDTO regula = dto.getRegulaProcentowa();
             if (regula.isZastosuj()) {
                 szablon.setProcentNaPotrzeby(regula.getProcentNaPotrzeby());
                 szablon.setProcentNaZachcianki(regula.getProcentNaZachcianki());

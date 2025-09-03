@@ -13,7 +13,6 @@ import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.modele.Konto;
 import zarzadzanieFinansami.modele.Uzytkownik;
 import zarzadzanieFinansami.modele.enumeracje.TypKontaEnum;
-import zarzadzanieFinansami.modele.enumeracje.WalutaEnum;
 import zarzadzanieFinansami.serwisy.KontoUsługa;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
@@ -44,7 +43,6 @@ public class KontoKontroler {
                 konto.getNazwa(),
                 konto.getBilans(),
                 konto.getTyp() != null ? konto.getTyp().name() : null,
-                konto.getWaluta() != null ? konto.getWaluta().name() : null,
                 konto.getDataUtworzenia(),
                 konto.getUzytkownik() != null ? konto.getUzytkownik().getId() : null
         );
@@ -80,13 +78,6 @@ public class KontoKontroler {
                                 ". Dostępne wartości: " + java.util.Arrays.toString(TypKontaEnum.values()));
             }
 
-            try {
-                noweKontoEncja.setWaluta(WalutaEnum.valueOf(kontoWysylanieDTO.getWaluta().toUpperCase())); // Dodaj .toUpperCase()
-            } catch (IllegalArgumentException ex) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body("Nieprawidłowa wartość dla waluty: " + kontoWysylanieDTO.getWaluta() +
-                                ". Dostępne wartości: " + java.util.Arrays.toString(WalutaEnum.values()));
-            }
             // Data utworzenia i użytkownik zostaną ustawione w serwisie lub przez @PrePersist
 
             Konto zapisaneKonto = kontoUsluga.stworzenieKontoDlaUzytkownika(currentUser, noweKontoEncja);

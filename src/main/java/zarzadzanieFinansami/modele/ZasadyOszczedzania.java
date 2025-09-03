@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "zasady_oszczedzania")
 public class ZasadyOszczedzania {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private double procent;
     @Enumerated(EnumType.STRING)

@@ -2,6 +2,7 @@
 package zarzadzanieFinansami.serwisy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import zarzadzanieFinansami.DTO.budzet.BudzetWysylanieDTO;
@@ -9,7 +10,7 @@ import zarzadzanieFinansami.DTO.budzet.BudzetOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuWysylanieDTO;
 import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.budzet.RegulaKwotowaDTO;
-import zarzadzanieFinansami.DTO.budzet.RegulaProcentoweDTO;
+import zarzadzanieFinansami.DTO.budzet.RegulaProcentowaDTO;
 import zarzadzanieFinansami.magazyn.*;
 import zarzadzanieFinansami.modele.*;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
@@ -17,6 +18,7 @@ import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -176,7 +178,7 @@ public class BudzetUsługa {
         budzet.setTypReguly(dto.getTypReguly());
 
         if (dto.getTypReguly() == TypRegulyBudzetowejEnum.PROCENTOWA && dto.getRegulaProcentowa() != null) {
-            RegulaProcentoweDTO regula = dto.getRegulaProcentowa();
+            RegulaProcentowaDTO regula = dto.getRegulaProcentowa();
             if (regula.isZastosuj()) {
                 budzet.setProcentNaPotrzeby(regula.getProcentNaPotrzeby());
                 budzet.setProcentNaZachcianki(regula.getProcentNaZachcianki());
@@ -269,13 +271,21 @@ public class BudzetUsługa {
 
 
         for (PozycjaBudzetu pozycja : budzet.getPozycjeBudzetu()) {
-            List<Transakcja> transakcjeDlaPozycji = magazynTransakcji.findByKonto_UzytkownikAndKategoriaAndTypAndDataBetweenOrderByDataDesc(
-                    uzytkownik,
-                    pozycja.getKategoria(),
-                    TypTransakcjiEnum.KOSZT,
-                    dataPoczatkuOkresu,
-                    dataKoncaOkresu
-            );
+            // Używamy Specification, aby dynamicznie budować zapytanie, tak jak w TransakcjaUsługa
+            LocalDate finalDataKoncaOkresu = dataKoncaOkresu;
+            Specification<Transakcja> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("konto").get("uzytkownik"), uzytkownik));
+                predicates.add(cb.equal(root.get("kategoria"), pozycja.getKategoria()));
+                predicates.add(cb.equal(root.get("typ"), TypTransakcjiEnum.KOSZT));
+                predicates.add(cb.between(root.get("data"), dataPoczatkuOkresu, finalDataKoncaOkresu));
+
+                query.orderBy(cb.desc(root.get("data"))); // Zachowujemy sortowanie
+
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+
+            List<Transakcja> transakcjeDlaPozycji = magazynTransakcji.findAll(spec);
             BigDecimal sumaWydatkowDlaPozycji = transakcjeDlaPozycji.stream()
                     .map(Transakcja::getKwota)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -305,6 +315,7 @@ public class BudzetUsługa {
                 sumaRzeczywistychWydatkowCalegoBudzetu,
                 budzet.isAktywny(),
                 budzet.getOpartyNaSzablonie() != null ? budzet.getOpartyNaSzablonie().getId() : null,
+                budzet.getTypReguly(),
                 budzet.getProcentNaPotrzeby(),
                 budzet.getProcentNaZachcianki(),
                 budzet.getProcentNaInwestycje(),

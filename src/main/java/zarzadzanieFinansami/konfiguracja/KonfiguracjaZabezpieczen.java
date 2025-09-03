@@ -16,7 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter; // Dodaj ten import
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import zarzadzanieFinansami.JWT.AutoryzacjaTokenuFiltr; // Załóżmy, że ta klasa będzie w tym pakiecie
 import zarzadzanieFinansami.JWT.JwtAutoryzacjaEntryPoint; // Importuj swoją klasę
 import zarzadzanieFinansami.serwisy.DetaleUzytkownikówSerwis;
@@ -47,8 +47,7 @@ public class KonfiguracjaZabezpieczen {
                         exception.authenticationEntryPoint(JwtAutoryzacjaEntryPoint) // Teraz powinno działać
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Endpointy logowania/rejestracji
-                        .requestMatchers("/api/rejestracja/**").permitAll() // Endpoint rejestracji
+                        .requestMatchers("/api/auth/**", "/api/rejestracja/**").permitAll() // Endpointy logowania/rejestracji
                         // Możesz dodać inne publiczne ścieżki, np. Swagger UI
                         //.requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated() // Wszystkie inne żądania wymagają uwierzytelnienia

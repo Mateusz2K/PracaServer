@@ -42,7 +42,7 @@ public class BudzetWysylanieDTO {
 
     // Obiekt z danymi dla reguły procentowej (jeśli typReguly == PROCENTOWA)
     @Valid
-    private RegulaProcentoweDTO regulaProcentowa;
+    private RegulaProcentowaDTO regulaProcentowa;
 
     // Obiekt z danymi dla reguły kwotowej (jeśli typReguly == KWOTOWA)
     @Valid
@@ -66,8 +66,8 @@ public class BudzetWysylanieDTO {
 
     public TypRegulyBudzetowejEnum getTypReguly() { return typReguly; }
     public void setTypReguly(TypRegulyBudzetowejEnum typReguly) { this.typReguly = typReguly; }
-    public RegulaProcentoweDTO getRegulaProcentowa() { return regulaProcentowa; }
-    public void setRegulaProcentowa(RegulaProcentoweDTO regulaProcentowa) { this.regulaProcentowa = regulaProcentowa; }
+    public RegulaProcentowaDTO getRegulaProcentowa() { return regulaProcentowa; }
+    public void setRegulaProcentowa(RegulaProcentowaDTO regulaProcentowa) { this.regulaProcentowa = regulaProcentowa; }
     public RegulaKwotowaDTO getRegulaKwotowa() { return regulaKwotowa; }
     public void setRegulaKwotowa(RegulaKwotowaDTO regulaKwotowa) { this.regulaKwotowa = regulaKwotowa; }
 

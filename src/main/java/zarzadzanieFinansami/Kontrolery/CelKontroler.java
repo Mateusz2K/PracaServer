@@ -8,8 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import zarzadzanieFinansami.DTO.cel.CelWysylanieDTO;
 import zarzadzanieFinansami.DTO.cel.CelOdpowiedzDTO;
+import zarzadzanieFinansami.DTO.cel.CelWysylanieDTO;
+import zarzadzanieFinansami.DTO.cel.ZasilenieCeluDTO;
 import zarzadzanieFinansami.serwisy.CelUsługa;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
@@ -73,10 +74,10 @@ public class CelKontroler {
     // Dodatkowy endpoint do dodawania środków do celu
     @PostMapping("/{id}/dodaj-srodki")
     public ResponseEntity<CelOdpowiedzDTO> dodajSrodkiDoCelu(@PathVariable Integer id,
-                                                             @RequestParam BigDecimal kwota,
+                                                             @Valid @RequestBody ZasilenieCeluDTO dto,
                                                              Authentication authentication) {
         String emailUzytkownika = getCurrentUsername(authentication);
-        CelOdpowiedzDTO zaktualizowanyCel = celUsługa.dodajSrodkiDoCelu(id, kwota, emailUzytkownika);
+        CelOdpowiedzDTO zaktualizowanyCel = celUsługa.dodajSrodkiDoCelu(id, dto, emailUzytkownika);
         return ResponseEntity.ok(zaktualizowanyCel);
     }
 }

@@ -1,14 +1,18 @@
 package zarzadzanieFinansami.DTO.transakcja;
 
-// Możesz potrzebować importu dla @JsonFormat, jeśli chcesz wymusić konkretny format daty od klienta
-// import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
+
+import java.time.LocalDate;
 
 public class TransakcjaPobieranieDTO {
     private Integer kategoriaId; // Opcjonalne ID kategorii
-    private Integer kontoId; // Opcjonalne ID konta
-    private String dataOd;   // Opcjonalna data początkowa ( "dd.mm.yyyy")
-    private String dataDo;   // Opcjonalna data końcowa ("dd.mm.yyyy")
-
+    private Integer kontoId;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+    private LocalDate dataOd;   // Opcjonalna data początkowa
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy")
+    private LocalDate dataDo;   // Opcjonalna data końcowa
+    private TypTransakcjiEnum typTransakcji;
     // Gettery i Settery
     public Integer getKontoId() {
         return kontoId;
@@ -18,19 +22,19 @@ public class TransakcjaPobieranieDTO {
         this.kontoId = kontoId;
     }
 
-    public String getDataOd() {
+    public LocalDate getDataOd() {
         return dataOd;
     }
 
-    public void setDataOd(String dataOd) {
+    public void setDataOd(LocalDate dataOd) {
         this.dataOd = dataOd;
     }
 
-    public String getDataDo() {
+    public LocalDate getDataDo() {
         return dataDo;
     }
 
-    public void setDataDo(String dataDo) {
+    public void setDataDo(LocalDate dataDo) {
         this.dataDo = dataDo;
     }
 
@@ -40,5 +44,13 @@ public class TransakcjaPobieranieDTO {
 
     public void setKategoriaId(Integer kategoriaId) {
         this.kategoriaId = kategoriaId;
+    }
+
+    public TypTransakcjiEnum getTypTransakcji() {
+        return typTransakcji;
+    }
+
+    public void setTypTransakcji(TypTransakcjiEnum typTransakcji) {
+        this.typTransakcji = typTransakcji;
     }
 }

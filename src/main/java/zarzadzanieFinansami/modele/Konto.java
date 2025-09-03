@@ -3,7 +3,6 @@ package zarzadzanieFinansami.modele;
 import jakarta.persistence.*;
 import zarzadzanieFinansami.konwertery.TypKontaConverter;
 import zarzadzanieFinansami.modele.enumeracje.TypKontaEnum;
-import zarzadzanieFinansami.modele.enumeracje.WalutaEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,9 +23,6 @@ public class Konto {
     @Column(nullable = false, name = "typ")
 //    @Enumerated(EnumType.STRING) // Przechowywanie wartości jako tekst w bazie
     private TypKontaEnum typ;
-    @Column(nullable = false, name = "waluta")
-    @Enumerated(EnumType.STRING) // Przechowywanie wartości jako tekst w bazie
-    private WalutaEnum waluta;
 
     @Column(updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime dataUtworzenia;
@@ -55,11 +51,10 @@ public class Konto {
 
 
 
-    public Konto(String nazwa, BigDecimal bilans, TypKontaEnum typ, WalutaEnum waluta, LocalDateTime dataUtworzenia, Uzytkownik uzytkownik) {
+    public Konto(String nazwa, BigDecimal bilans, TypKontaEnum typ, LocalDateTime dataUtworzenia, Uzytkownik uzytkownik) {
         this.nazwa = nazwa;
         this.bilans = bilans;
         this.typ = typ;
-        this.waluta = waluta;
         this.dataUtworzenia = dataUtworzenia;
         this.uzytkownik = uzytkownik;
     }
@@ -113,14 +108,6 @@ public class Konto {
 
     public void setTyp(TypKontaEnum typ) {
         this.typ = typ;
-    }
-
-    public WalutaEnum getWaluta() {
-        return waluta;
-    }
-
-    public void setWaluta(WalutaEnum waluta) {
-        this.waluta = waluta;
     }
 
     public LocalDateTime getDataUtworzenia() {
@@ -184,7 +171,6 @@ public class Konto {
                 ", nazwa='" + nazwa + '\'' +
                 ", bilans=" + bilans +
                 ", typ=" + (typ != null ? typ.name() : "null") + // Bezpieczne dla null
-                ", waluta=" + (waluta != null ? waluta.name() : "null") + // Bezpieczne dla null
                 ", dataUtworzenia=" + dataUtworzenia +
                 ", uzytkownikId=" + (uzytkownik != null ? uzytkownik.getId() : "null") + // Loguj ID użytkownika, aby uniknąć problemów z toString() użytkownika
                 // Możesz dodać więcej pól, jeśli potrzebujesz, np. liczbę transakcji

@@ -8,7 +8,7 @@ import java.util.List;
 @Table(name = "typ_powiadomienia")
 public class TypPowiadomienia {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(length = 100)
     private String nazwa;

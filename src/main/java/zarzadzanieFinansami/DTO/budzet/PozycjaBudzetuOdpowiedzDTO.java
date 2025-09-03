@@ -16,7 +16,6 @@ public class PozycjaBudzetuOdpowiedzDTO {
     private BigDecimal pozostalo;          // kwotaAlokowana - rzeczywisteWydatki
     private Double procentWykorzystania; // (rzeczywisteWydatki / kwotaAlokowana) * 100
 
-    // Konstruktor, Gettery i Settery
     public PozycjaBudzetuOdpowiedzDTO(Long id, Integer kategoriaId, String kategoriaNazwa, TypAlokacjiEnum typAlokacji, BigDecimal procentAlokowany, BigDecimal kwotaAlokowana, BigDecimal rzeczywisteWydatki) {
         this.id = id;
         this.kategoriaId = kategoriaId;

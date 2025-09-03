@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "raport_oszczednosci")
 public class RaportOszczednosci {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Column(nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")
     private Timestamp terminRaportu;

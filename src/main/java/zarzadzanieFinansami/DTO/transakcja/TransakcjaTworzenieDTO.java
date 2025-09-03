@@ -30,7 +30,7 @@ public class TransakcjaTworzenieDTO {
     private Integer kategoriaId;
 
     @NotNull(message = "ID konta jest wymagane.")//konto jest pozykiwane ze ścieżki HTTP
-    private Integer konto_id;
+    private Integer kontoId;
 
     // Gettery i Settery
     public String getOpis() { return opis; }
@@ -45,10 +45,10 @@ public class TransakcjaTworzenieDTO {
     public void setKategoriaId(Integer kategoriaId) { this.kategoriaId = kategoriaId; }
 
     public Integer getKontoId() {
-        return konto_id;
+        return kontoId;
     }
 
     public void setKontoId(Integer konto) {
-        this.konto_id = konto;
+        this.kontoId = konto;
     }
 }

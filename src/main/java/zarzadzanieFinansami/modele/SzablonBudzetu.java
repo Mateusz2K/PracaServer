@@ -53,6 +53,7 @@ public class SzablonBudzetu {
     public SzablonBudzetu() {
     }
 
+
     public Long getId() {
         return id;
     }

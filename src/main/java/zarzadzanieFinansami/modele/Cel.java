@@ -14,7 +14,7 @@ import java.util.List;
 public class Cel {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // Sugeruję GenerationType.IDENTITY dla autoinkrementacji przez bazę
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Sugeruję GenerationType.IDENTITY dla autoinkrementacji przez bazę
     @Column(name = "id", nullable = false)
     private Integer id; // Zmieniono na Long, co jest częstszą praktyką dla ID
 

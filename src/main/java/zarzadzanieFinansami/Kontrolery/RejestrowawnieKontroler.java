@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import zarzadzanieFinansami.DTO.logowanie.RejestrowanieOdpowiedzDTO;
 import zarzadzanieFinansami.DTO.logowanie.RejestrowanieUzytkownikaWysylanieDTO;
 import zarzadzanieFinansami.DTO.logowanie.ZmianaUzytkownikaWysylanieDTO;
 import zarzadzanieFinansami.serwisy.UzytkownikUsluga;
@@ -15,7 +16,7 @@ import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 // import java.net.URI; // Potrzebne dla ResponseEntity.created
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/rejestracja")
 public class RejestrowawnieKontroler {
 
 
@@ -26,15 +27,15 @@ public class RejestrowawnieKontroler {
         this.uzytkownikUsluga = uzytkownikUsluga;
     }
 
-    @PostMapping("/rejestracja")
+    @PostMapping("/rejestruj")
     // Zwracanie ResponseEntity daje większą kontrolę nad odpowiedzią HTTP
-    public ResponseEntity<String> rejestruj(@Valid @RequestBody RejestrowanieUzytkownikaWysylanieDTO uzytkownik){
+    public ResponseEntity<RejestrowanieOdpowiedzDTO> rejestruj(@Valid @RequestBody RejestrowanieUzytkownikaWysylanieDTO uzytkownik){
         // Wywołanie serwisu jest poprawne zgodnie z jego nową sygnaturą
         // Zakłada, że obiekt 'uzytkownik' z @RequestBody zawiera surowe hasło w polu 'haslo'
         uzytkownikUsluga.stworzUzytkownika(uzytkownik.getNazwa(), uzytkownik.getEmail(), uzytkownik.getHasło());
 
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(uzytkownik.getNazwa());
+        RejestrowanieOdpowiedzDTO odpowiedz = new RejestrowanieOdpowiedzDTO("Użytkownik został zarejestrowany", uzytkownik.getNazwa());
+        return ResponseEntity.status(HttpStatus.CREATED).body(odpowiedz);
         // Alternatywnie zwrócić np. ID:
         // Uzytkownik stworzony = uzytkownikUsluga.stworzUzytkownika(...);
         // return ResponseEntity.status(HttpStatus.CREATED).body(stworzony.getId()); // Zwraca tylko ID

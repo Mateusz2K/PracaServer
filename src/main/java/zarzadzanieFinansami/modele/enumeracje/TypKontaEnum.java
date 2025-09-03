@@ -1,5 +1,5 @@
 package zarzadzanieFinansami.modele.enumeracje;
 
 public enum TypKontaEnum {
-    OSZCZEDNOŚCIOWE, FIRMOWE, OGÓLNE, EMERYTALNE
+    OSZCZĘDNOŚCIOWE, FIRMOWE, OGÓLNE, EMERYTALNE
 }

@@ -1,6 +1,8 @@
 package zarzadzanieFinansami.DTO.budzet;
 
 import zarzadzanieFinansami.modele.enumeracje.OkresowoscEnum;
+import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,13 +20,14 @@ public class BudzetOdpowiedzDTO {
     private BigDecimal saldoBudzetu; // dochod - sumaRzeczywistychWydatkow LUB sumaAlokowana - sumaRzeczywistychWydatkow
     private boolean aktywny;
     private Long szablonId;
+    private TypRegulyBudzetowejEnum typReguly;
     private Integer procentNaPotrzeby;
     private Integer procentNaZachcianki;
     private Integer procentNaInwestycje;
     private List<PozycjaBudzetuOdpowiedzDTO> pozycjeBudzetu;
 
     // Konstruktor, Gettery i Settery
-    public BudzetOdpowiedzDTO(Long id, String nazwa, Integer uzytkownikId, LocalDate dataPoczatkowa, LocalDate dataKoncowa, OkresowoscEnum okresowosc, BigDecimal przewidywanyDochod, BigDecimal sumaAlokowana, BigDecimal sumaRzeczywistychWydatkow, boolean aktywny, Long szablonId, Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaBudzetuOdpowiedzDTO> pozycjeBudzetu) {
+    public BudzetOdpowiedzDTO(Long id, String nazwa, Integer uzytkownikId, LocalDate dataPoczatkowa, LocalDate dataKoncowa, OkresowoscEnum okresowosc, BigDecimal przewidywanyDochod, BigDecimal sumaAlokowana, BigDecimal sumaRzeczywistychWydatkow, boolean aktywny, Long szablonId,TypRegulyBudzetowejEnum  typReguly , Integer procentNaPotrzeby, Integer procentNaZachcianki, Integer procentNaInwestycje, List<PozycjaBudzetuOdpowiedzDTO> pozycjeBudzetu) {
         this.id = id;
         this.nazwa = nazwa;
         this.uzytkownikId = uzytkownikId;
@@ -36,6 +39,7 @@ public class BudzetOdpowiedzDTO {
         this.sumaRzeczywistychWydatkow = sumaRzeczywistychWydatkow != null ? sumaRzeczywistychWydatkow : BigDecimal.ZERO;
         this.aktywny = aktywny;
         this.szablonId = szablonId;
+        this.typReguly = typReguly;
         this.procentNaPotrzeby = procentNaPotrzeby;
         this.procentNaZachcianki = procentNaZachcianki;
         this.procentNaInwestycje = procentNaInwestycje;
@@ -58,6 +62,7 @@ public class BudzetOdpowiedzDTO {
     public BigDecimal getSaldoBudzetu() { return saldoBudzetu; }
     public boolean isAktywny() { return aktywny; }
     public Long getSzablonId() { return szablonId; }
+    public TypRegulyBudzetowejEnum getTypReguly() { return typReguly; }
     public Integer getProcentNaPotrzeby() { return procentNaPotrzeby; }
     public Integer getProcentNaZachcianki() { return procentNaZachcianki; }
     public Integer getProcentNaInwestycje() { return procentNaInwestycje; }

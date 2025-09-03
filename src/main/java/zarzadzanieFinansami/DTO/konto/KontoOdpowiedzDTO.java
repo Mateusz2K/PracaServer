@@ -13,17 +13,15 @@ public class KontoOdpowiedzDTO {
     private String nazwa;
     private BigDecimal bilans;
     private String typ; // String zamiast enuma dla prostoty w DTO
-    private String waluta; // String zamiast enuma
     private LocalDateTime dataUtworzenia;
     private Integer uzytkownikId; // Tylko ID właściciela
 
     // Konstruktor
-    public KontoOdpowiedzDTO(int id, String nazwa, BigDecimal bilans, String typ, String waluta, LocalDateTime dataUtworzenia, Integer uzytkownikId) {
+    public KontoOdpowiedzDTO(int id, String nazwa, BigDecimal bilans, String typ, LocalDateTime dataUtworzenia, Integer uzytkownikId) {
         this.id = id;
         this.nazwa = nazwa;
         this.bilans = bilans;
         this.typ = typ;
-        this.waluta = waluta;
         this.dataUtworzenia = dataUtworzenia;
         this.uzytkownikId = uzytkownikId;
     }
@@ -37,8 +35,6 @@ public class KontoOdpowiedzDTO {
     public void setBilans(BigDecimal bilans) { this.bilans = bilans; }
     public String getTyp() { return typ; }
     public void setTyp(String typ) { this.typ = typ; }
-    public String getWaluta() { return waluta; }
-    public void setWaluta(String waluta) { this.waluta = waluta; }
     public LocalDateTime getDataUtworzenia() { return dataUtworzenia; }
     public void setDataUtworzenia(LocalDateTime dataUtworzenia) { this.dataUtworzenia = dataUtworzenia; }
     public Integer getUzytkownikId() { return uzytkownikId; }

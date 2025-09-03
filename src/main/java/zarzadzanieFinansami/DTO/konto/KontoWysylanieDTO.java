@@ -15,8 +15,6 @@ public class KontoWysylanieDTO {
         @NotNull(message = "Typ konta nie może być pusty")
         private String typ; // Np. "OSOBISTE", "OSZCZEDNOSCIOWE" - odpowiadające Twoim enumom
 
-        @NotNull(message = "Waluta nie może być pusta")
-        private String waluta; // Np. "PLN", "USD" - odpowiadające Twoim enumom
 
         private BigDecimal bilans;// Opcjonalny
 
@@ -26,7 +24,6 @@ public class KontoWysylanieDTO {
         public KontoWysylanieDTO(String nazwa, String typ, String waluta, BigDecimal bilans) {
                 this.nazwa = nazwa;
                 this.typ = typ;
-                this.waluta = waluta;
                 this.bilans = bilans;
         }
 
@@ -35,8 +32,6 @@ public class KontoWysylanieDTO {
         public void setNazwa(String nazwa) { this.nazwa = nazwa; }
         public String getTyp() { return typ; }
         public void setTyp(String typ) { this.typ = typ; }
-        public String getWaluta() { return waluta; }
-        public void setWaluta(String waluta) { this.waluta = waluta; }
         public BigDecimal getBilans() { return bilans; }
         public void setBilans(BigDecimal bilans) { this.bilans = bilans; }
 }

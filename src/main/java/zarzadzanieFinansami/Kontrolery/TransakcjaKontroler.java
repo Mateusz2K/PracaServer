@@ -17,6 +17,7 @@ import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.ForbiddenAccessException;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -69,6 +70,24 @@ public class TransakcjaKontroler {
         }
     }
 
+    @GetMapping("/transakcje/{id}")
+    public ResponseEntity<?> pobierzTransakcjeDlaId(@PathVariable Integer id, Authentication authentication) {
+        Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication);
+        try {
+            Optional<Transakcja> transakcja = transakcjaUsługa.pobierzTransakcjePoId(id);
+            if (transakcja.isPresent()) {
+                TransakcjaOdpowiedzDTO dto = mapToDto(transakcja.get());
+                return ResponseEntity.ok(dto);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (DaneNieZnalesionoExeption e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ForbiddenAccessException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+    }
+
     // NOWY ENDPOINT do dynamicznego pobierania transakcji
     @PostMapping("/transakcje/pobierz")
     public ResponseEntity<?> pobierzTransakcjeDynamicznie(
@@ -84,6 +103,7 @@ public class TransakcjaKontroler {
                     kryteria.getKontoId(),
                     kryteria.getDataOd(),
                     kryteria.getDataDo(),
+                    kryteria.getTypTransakcji(),
                     currentUser
             );
 

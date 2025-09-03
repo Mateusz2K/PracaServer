@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Table(name = "historia_konta")
 public class HistoriaKonta {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
     @Column(name = "data_zmiany",nullable = false, updatable = false, columnDefinition = "DATETIME DEFAULT CURRENT_TIMESTAMP")

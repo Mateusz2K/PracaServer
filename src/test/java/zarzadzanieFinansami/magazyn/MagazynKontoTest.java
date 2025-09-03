@@ -13,7 +13,6 @@ import zarzadzanieFinansami.modele.enumeracje.WalutaEnum;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +47,7 @@ public class MagazynKontoTest {
         Konto noweKonto = new Konto();
         noweKonto.setNazwa("Konto Oszczędnościowe");
         noweKonto.setBilans(new BigDecimal("1000.00"));
-        noweKonto.setTyp(TypKontaEnum.OSZCZEDNOŚCIOWE);
+        noweKonto.setTyp(TypKontaEnum.OSZCZĘDNOŚCIOWE);
         noweKonto.setWaluta(WalutaEnum.PLN);
         // NAJWAŻNIEJSZE: Przypisujemy wcześniej utworzonego użytkownika do konta
         noweKonto.setUzytkownik(testowyUzytkownik);

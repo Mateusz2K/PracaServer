@@ -2,6 +2,7 @@ package zarzadzanieFinansami.serwisy;
 
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import zarzadzanieFinansami.DTO.budzet.BudzetWysylanieDTO;
 import zarzadzanieFinansami.DTO.budzet.PozycjaBudzetuWysylanieDTO;
@@ -13,6 +14,7 @@ import zarzadzanieFinansami.modele.Uzytkownik;
 import zarzadzanieFinansami.modele.enumeracje.TypAlokacjiEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 
+import jakarta.persistence.criteria.Predicate;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -41,13 +43,15 @@ public class SugestieBudzetoweUsługa {
         }
 
         for (Kategoria kategoria : kategorieUzytkownika) {
-            List<Transakcja> transakcjeWKategorii = magazynTransakcji.findByKonto_UzytkownikAndKategoriaAndTypAndDataBetweenOrderByDataDesc(
-                    uzytkownik,
-                    kategoria,
-                    TypTransakcjiEnum.KOSZT,
-                    dataOd,
-                    dataDo
-            );
+            Specification<Transakcja> spec = (root, query, cb) -> {
+                List<Predicate> predicates = new ArrayList<>();
+                predicates.add(cb.equal(root.get("konto").get("uzytkownik"), uzytkownik));
+                predicates.add(cb.equal(root.get("kategoria"), kategoria));
+                predicates.add(cb.equal(root.get("typ"), TypTransakcjiEnum.KOSZT));
+                predicates.add(cb.between(root.get("data"), dataOd, dataDo));
+                return cb.and(predicates.toArray(new Predicate[0]));
+            };
+            List<Transakcja> transakcjeWKategorii = magazynTransakcji.findAll(spec);
 
             BigDecimal sumaWydatkowWKategorii = transakcjeWKategorii.stream()
                     .map(Transakcja::getKwota)
@@ -63,12 +67,14 @@ public class SugestieBudzetoweUsługa {
         long liczbaMiesiecy = ChronoUnit.MONTHS.between(dataOd.withDayOfMonth(1), dataDo.withDayOfMonth(1)) + 1;
         if (liczbaMiesiecy <= 0) return BigDecimal.ZERO;
 
-        List<Transakcja> dochody = magazynTransakcji.findByKonto_UzytkownikAndTypAndDataBetweenOrderByDataDesc(
-                uzytkownik,
-                TypTransakcjiEnum.PRZYCHÓD,
-                dataOd,
-                dataDo
-        );
+        Specification<Transakcja> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+            predicates.add(cb.equal(root.get("konto").get("uzytkownik"), uzytkownik));
+            predicates.add(cb.equal(root.get("typ"), TypTransakcjiEnum.PRZYCHÓD));
+            predicates.add(cb.between(root.get("data"), dataOd, dataDo));
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+        List<Transakcja> dochody = magazynTransakcji.findAll(spec);
         BigDecimal sumaDochodow = dochody.stream().map(Transakcja::getKwota).reduce(BigDecimal.ZERO, BigDecimal::add);
         return sumaDochodow.divide(BigDecimal.valueOf(liczbaMiesiecy), 2, RoundingMode.HALF_UP);
     }

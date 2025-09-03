@@ -4,7 +4,7 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
-public class RegulaProcentoweDTO {
+public class RegulaProcentowaDTO {
     @Min(value = 0, message = "Procenty muszą być nieujemne")
     @Max(value = 100, message = "Procenty muszą być mniejsze lub równe 100")
     private Integer procentNaPotrzeby;

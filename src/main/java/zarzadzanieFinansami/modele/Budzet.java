@@ -71,8 +71,6 @@ public class Budzet {
     private Integer procentNaInwestycje;
 
 
-    // Konstruktory, Gettery, Settery
-
     public Budzet() {
     }
 

@@ -1,6 +1,7 @@
 package zarzadzanieFinansami.DTO.cel;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import zarzadzanieFinansami.modele.enumeracje.CelStatusEnum;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,10 +17,12 @@ public class CelOdpowiedzDTO {
     private LocalDate dataZakonczenia;
     private String opis;
     private Integer uzytkownikId;
+    private int kontoId;
+    private CelStatusEnum status;
     private double procentOsiagniety;// Dodatkowe pola dla wygody
 
     public CelOdpowiedzDTO(Integer id, String nazwaCelu, BigDecimal kwotaDocelowa, BigDecimal aktualnaKwota,
-                           LocalDate dataRozpoczecia, LocalDate dataZakonczenia, String opis, Integer uzytkownikId) {
+                           LocalDate dataRozpoczecia, LocalDate dataZakonczenia, String opis, Integer uzytkownikId, int kontoId, CelStatusEnum status) {
         this.id = id;
         this.nazwaCelu = nazwaCelu;
         this.kwotaDocelowa = kwotaDocelowa;
@@ -28,12 +31,31 @@ public class CelOdpowiedzDTO {
         this.dataZakonczenia = dataZakonczenia;
         this.opis = opis;
         this.uzytkownikId = uzytkownikId;
+        this.kontoId = kontoId;
+        this.status = status;
+        // Obliczenie procentu osiągniętego
         if (kwotaDocelowa != null && kwotaDocelowa.compareTo(BigDecimal.ZERO) > 0 && aktualnaKwota != null) {
             this.procentOsiagniety = aktualnaKwota.multiply(BigDecimal.valueOf(100)).divide(kwotaDocelowa, 2, BigDecimal.ROUND_HALF_UP).doubleValue();
         } else {
             this.procentOsiagniety = 0.0;
         }
     }
+    public int getKontoId() {
+        return kontoId;
+    }
+
+    public void setKontoId(int kontoId) {
+        this.kontoId = kontoId;
+    }
+
+    public CelStatusEnum getStatus() {
+        return status;
+    }
+
+    public void setStatus(CelStatusEnum status) {
+        this.status = status;
+    }
+
 
     public Integer getId() {
         return id;

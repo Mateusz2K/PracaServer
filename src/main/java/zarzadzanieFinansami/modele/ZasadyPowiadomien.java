@@ -7,7 +7,7 @@ import zarzadzanieFinansami.modele.enumeracje.RegulaEnum;
 @Table(name = "zasady_powiadomien")
 public class ZasadyPowiadomien {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @Enumerated(EnumType.STRING)
     private RegulaEnum regula;

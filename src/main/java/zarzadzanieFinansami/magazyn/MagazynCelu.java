@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.Optional;
 
-public interface    MagazynCelu extends JpaRepository<Cel, Integer> {
+public interface MagazynCelu extends JpaRepository<Cel, Integer> {
     @Override
     <S extends Cel> S saveAndFlush(S entity);
 
