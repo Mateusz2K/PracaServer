@@ -3,28 +3,43 @@ package zarzadzanieFinansami.serwisy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 // Usunięto import zarzadzanieFinansami.DTO.UzytkownikDTO;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.transaction.annotation.Transactional; // Dodano dla transakcyjności
+import org.springframework.transaction.annotation.Transactional;
+import zarzadzanieFinansami.magazyn.MagazynKategorii;
+import zarzadzanieFinansami.magazyn.MagazynKonta;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownikaDodatek;
+import zarzadzanieFinansami.modele.Kategoria;
+import zarzadzanieFinansami.modele.Konto;
 import zarzadzanieFinansami.modele.Uzytkownik;
 // Usunięto import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder; // Niepotrzebny, używamy wstrzykniętego interfejsu
 import org.springframework.stereotype.Service;
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 import zarzadzanieFinansami.modele.enumeracje.RolaEnum;
+import zarzadzanieFinansami.modele.enumeracje.TypKontaEnum;
+import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional // Dobra praktyka dla serwisów modyfikujących dane
+@Transactional
 public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
 
     private final PasswordEncoder passwordEncoder;
     private final MagazynUzytkownika magazynUzytkownika;
+    private final MagazynKonta magazynKonta;
+    private final MagazynKategorii magazynKategorii;
 
-    public UzytkownikUsluga(MagazynUzytkownika magazynUzytkownika, PasswordEncoder passwordEncoder) {
+    public UzytkownikUsluga(MagazynUzytkownika magazynUzytkownika,
+                            PasswordEncoder passwordEncoder,
+                            MagazynKonta magazynKonta,
+                            MagazynKategorii magazynKategorii) {
         this.magazynUzytkownika = magazynUzytkownika;
         this.passwordEncoder = passwordEncoder;
+        this.magazynKonta = magazynKonta;
+        this.magazynKategorii = magazynKategorii;
     }
 
     /**
@@ -61,9 +76,45 @@ public class UzytkownikUsluga implements MagazynUzytkownikaDodatek {
         uzytkownik.setHaslo(passwordEncoder.encode(suroweHaslo)); // Kodowanie hasła
         uzytkownik.setRola(RolaEnum.USER); // Ustawienie domyślnej roli
 
-        // Zapisanie użytkownika i zwrócenie zapisanej encji
-        return magazynUzytkownika.save(uzytkownik);
-        // Nie zwracamy już DTO, a zwłaszcza nie zwracamy hasła!
+        // Krok 1: Zapisz użytkownika, aby uzyskać jego ID i móc powiązać z nim inne encje
+        Uzytkownik zapisanyUzytkownik = magazynUzytkownika.save(uzytkownik);
+
+        // Krok 2: Stwórz domyślne konto "Ogólne" dla nowego użytkownika
+        stworzDomyslneKonto(zapisanyUzytkownik);
+
+        // Krok 3: Stwórz domyślne kategorie dla nowego użytkownika
+        stworzDomyslneKategorie(zapisanyUzytkownik);
+
+        return zapisanyUzytkownik;
+    }
+
+    private void stworzDomyslneKonto(Uzytkownik uzytkownik) {
+        Konto domyslneKonto = new Konto();
+        domyslneKonto.setNazwa("Konto Ogólne");
+        domyslneKonto.setBilans(BigDecimal.ZERO);
+        domyslneKonto.setTyp(TypKontaEnum.OGÓLNE);
+        domyslneKonto.setUzytkownik(uzytkownik);
+        magazynKonta.save(domyslneKonto);
+    }
+
+    private void stworzDomyslneKategorie(Uzytkownik uzytkownik) {
+        // Tutaj podasz swoje kategorie. Poniżej kilka przykładów.
+        List<Kategoria> domyslneKategorie = List.of(
+                // Kategorie kosztów
+                new Kategoria("Jedzenie", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.POTRZEBY),
+                new Kategoria("Transport", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.POTRZEBY),
+                new Kategoria("Rachunki", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.POTRZEBY),
+                new Kategoria("Rozrywka", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.ZACHCIANKI),
+                new Kategoria("Higiena", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.POTRZEBY),
+                new Kategoria("Zakupy", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.POTRZEBY),
+                new Kategoria("Prezenty", TypTransakcjiEnum.KOSZT, uzytkownik, KategorieBudzetEnum.ZACHCIANKI),
+
+
+
+                // Kategorie przychodów
+                new Kategoria("Wynagrodzenie", TypTransakcjiEnum.PRZYCHÓD, uzytkownik, null)
+        );
+        magazynKategorii.saveAll(domyslneKategorie);
     }
 
     /**

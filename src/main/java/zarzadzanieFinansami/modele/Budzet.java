@@ -145,19 +145,30 @@ public class Budzet {
 
     public void setPozycjeBudzetu(List<PozycjaBudzetu> pozycjeBudzetu) {
         this.pozycjeBudzetu = pozycjeBudzetu;
-        // Można dodać logikę aktualizacji sumyAlokowanej przy zmianie pozycji
+        przeliczSumeAlokowana();
     }
+
+    /**
+     * Prywatna metoda pomocnicza do obliczania sumy alokowanych kwot.
+     * Zapewnia, że pole sumaAlokowana jest zawsze spójne ze stanem listy pozycjeBudzetu.
+     */
+    private void przeliczSumeAlokowana() {
+        this.sumaAlokowana = this.pozycjeBudzetu.stream()
+                .map(PozycjaBudzetu::getKwotaAlokowana)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
 
     public void dodajPozycjeBudzetu(PozycjaBudzetu pozycja) {
         this.pozycjeBudzetu.add(pozycja);
         pozycja.setBudzet(this);
-        // Aktualizuj sumę alokowaną
+        przeliczSumeAlokowana();
     }
 
     public void usunPozycjeBudzetu(PozycjaBudzetu pozycja) {
         this.pozycjeBudzetu.remove(pozycja);
         pozycja.setBudzet(null);
-        // Aktualizuj sumę alokowaną
+        przeliczSumeAlokowana();
     }
 
     public boolean isAktywny() {

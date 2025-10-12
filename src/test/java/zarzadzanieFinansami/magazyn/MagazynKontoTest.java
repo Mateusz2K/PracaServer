@@ -48,7 +48,6 @@ public class MagazynKontoTest {
         noweKonto.setNazwa("Konto Oszczędnościowe");
         noweKonto.setBilans(new BigDecimal("1000.00"));
         noweKonto.setTyp(TypKontaEnum.OSZCZĘDNOŚCIOWE);
-        noweKonto.setWaluta(WalutaEnum.PLN);
         // NAJWAŻNIEJSZE: Przypisujemy wcześniej utworzonego użytkownika do konta
         noweKonto.setUzytkownik(testowyUzytkownik);
 
@@ -73,7 +72,6 @@ public class MagazynKontoTest {
         konto1.setUzytkownik(testowyUzytkownik);
         konto1.setTyp(TypKontaEnum.OGÓLNE);
         konto1.setBilans(new BigDecimal("5000.00"));
-        konto1.setWaluta(WalutaEnum.PLN);
 
         entityManager.persist(konto1);
 
@@ -82,7 +80,6 @@ public class MagazynKontoTest {
         konto2.setUzytkownik(testowyUzytkownik);
         konto2.setTyp(TypKontaEnum.FIRMOWE);
         konto2.setBilans(new BigDecimal("2000.00"));
-        konto2.setWaluta(WalutaEnum.EUR);
 
         entityManager.persist(konto2);
 

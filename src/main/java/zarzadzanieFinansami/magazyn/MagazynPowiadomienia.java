@@ -2,32 +2,22 @@ package zarzadzanieFinansami.magazyn;
 
 import zarzadzanieFinansami.modele.Powiadomienia;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface MagazynPowiadomienia extends JpaRepository<Powiadomienia, Integer> {
-    @Override
-    <S extends Powiadomienia> S saveAndFlush(S entity);
 
-    @Override
-    void delete(Powiadomienia entity);
+    List<Powiadomienia> findByUzytkownikIdOrderByWygenerowanyCzasDesc(Integer uzytkownikId);
 
-    @Override
-    void deleteAll();
+    List<Powiadomienia> findByUzytkownikIdAndCzyPrzeczytaneIsFalseOrderByWygenerowanyCzasDesc(Integer uzytkownikId);
 
-    @Override
-    void deleteById(Integer integer);
+    Optional<Powiadomienia> findByIdAndUzytkownikId(Integer id, Integer uzytkownikId);
 
-    @Override
-    long count();
-
-    @Override
-    boolean existsById(Integer integer);
-
-    @Override
-    Optional<Powiadomienia> findById(Integer integer);
-
-    @Override
-    List<Powiadomienia> findAll();
+    @Modifying
+    @Query("UPDATE Powiadomienia p SET p.czyPrzeczytane = true WHERE p.uzytkownik.id = :uzytkownikId AND p.czyPrzeczytane = false")
+    void oznaczWszystkieJakoPrzeczytajDlaUzytkownika(@Param("uzytkownikId") Integer uzytkownikId);
 }

@@ -1,6 +1,7 @@
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 
 import java.util.List;
@@ -15,6 +16,8 @@ public class Kategoria {
     private String nazwa;
     @Enumerated(EnumType.STRING)
     private TypTransakcjiEnum typTransakcji;
+    @Enumerated(EnumType.STRING)
+    private KategorieBudzetEnum kategorieBudzet;
 
     //połaczenie transakcji
     @OneToMany(mappedBy = "kategoria", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
@@ -29,11 +32,14 @@ public class Kategoria {
     public Kategoria() {
     }
 
-    public Kategoria(String nazwa, TypTransakcjiEnum typTransakcji, Uzytkownik uzytkownik) {
+    public Kategoria(String nazwa, TypTransakcjiEnum typTransakcji, Uzytkownik uzytkownik, KategorieBudzetEnum kategorieBudzet) {
         this.nazwa = nazwa;
         this.typTransakcji = typTransakcji;
         this.uzytkownik = uzytkownik;
+        // Kategorie budżetowe mają sens tylko dla kosztów.
+        this.kategorieBudzet = typTransakcji == TypTransakcjiEnum.KOSZT ? kategorieBudzet : null;
     }
+
 
     public int getId() {
         return id;
@@ -80,5 +86,13 @@ public class Kategoria {
 
     public void setUzytkownik(Uzytkownik uzytkownik) { // <-- SETTER DLA UŻYTKOWNIKA
         this.uzytkownik = uzytkownik;
+    }
+
+    public KategorieBudzetEnum getKategorieBudzet() {
+        return kategorieBudzet;
+    }
+
+    public void setKategorieBudzet(KategorieBudzetEnum kategorieBudzet) {
+        this.kategorieBudzet = kategorieBudzet;
     }
 }

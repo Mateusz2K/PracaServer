@@ -30,9 +30,9 @@ public class Uzytkownik{
     @OneToMany(mappedBy = "uzytkownik", cascade = CascadeType.ALL,orphanRemoval = true)
     List<Konto> konta;
     //połączenie raport oszczedności
-    @OneToMany(mappedBy = "uzytkownik", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<RaportOszczednosci> raportYOszczednosciowe;
-    //połaczenie powiadomień
+//    @OneToMany(mappedBy = "uzytkownik", cascade = CascadeType.ALL, orphanRemoval = true)
+//    List<RaportOszczednosci> raportYOszczednosciowe;
+//    //połaczenie powiadomień
     @OneToMany(mappedBy = "uzytkownik", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Powiadomienia> powiadomienia;
 
@@ -86,13 +86,13 @@ public class Uzytkownik{
         this.konta = konta;
     }
 
-    public List<RaportOszczednosci> getRaportYOszczednosciowe() {
-        return raportYOszczednosciowe;
-    }
-
-    public void setRaportYOszczednosciowe(List<RaportOszczednosci> raportYOszczednosciowe) {
-        this.raportYOszczednosciowe = raportYOszczednosciowe;
-    }
+//    public List<RaportOszczednosci> getRaportYOszczednosciowe() {
+//        return raportYOszczednosciowe;
+//    }
+//
+//    public void setRaportYOszczednosciowe(List<RaportOszczednosci> raportYOszczednosciowe) {
+//        this.raportYOszczednosciowe = raportYOszczednosciowe;
+//    }
 
     public List<Powiadomienia> getPowiadomienia() {
         return powiadomienia;
@@ -146,4 +146,7 @@ public class Uzytkownik{
     }
 
 
+    public Uzytkownik orElseThrow(Object o) {
+        return null;
+    }
 }

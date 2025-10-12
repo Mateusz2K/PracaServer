@@ -11,6 +11,7 @@ import zarzadzanieFinansami.DTO.kategoria.KategoriaWysylanieDTO;
 import zarzadzanieFinansami.magazyn.MagazynUzytkownika; // Import
 import zarzadzanieFinansami.modele.Kategoria;
 import zarzadzanieFinansami.modele.Uzytkownik; // Import
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 import zarzadzanieFinansami.serwisy.KategoriaUsługa;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.DuplikatException;
@@ -38,7 +39,8 @@ public class KategoriaKontroler {
         return new KategoriaOdpowiedzDTO(
                 kategoria.getId(),
                 kategoria.getNazwa(),
-                kategoria.getTypTransakcji()
+                kategoria.getTypTransakcji(),
+                kategoria.getKategorieBudzet()
         );
     }
 
@@ -125,7 +127,7 @@ public class KategoriaKontroler {
 
     // Usuwanie kategorii DLA BIEŻĄCEGO UŻYTKOWNIKA
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> usunKategorie(@PathVariable Integer id, Authentication authentication) { // <-- DODAJ Authentication
+    public ResponseEntity<?> usunKategorie(@PathVariable Integer id, Authentication authentication) {
         Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication); // <-- POBIERZ UŻYTKOWNIKA
         try {
             kategoriaUsługa.usunKategorie(id, currentUser); // <-- PRZEKAŻ UŻYTKOWNIKA
@@ -137,6 +139,18 @@ public class KategoriaKontroler {
         } catch (ForbiddenAccessException e) { // Obsługa błędu braku uprawnień
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
-        // Dodaj ogólną obsługę Exception
+    }
+    @GetMapping("/kategorieBudzet")
+    public ResponseEntity<?> pobierzKategoriePoKategoriiBudzetu(@RequestParam KategorieBudzetEnum kategoriaBudzetu, Authentication authentication) {
+        Uzytkownik currentUser = pobierzBiezacegoUzytkownika(authentication);
+        try {
+            List<Kategoria> kategorie = kategoriaUsługa.pobierzKategoriePoKategoriiBudzetu(kategoriaBudzetu, currentUser);
+            List<KategoriaOdpowiedzDTO> dtos = kategorie.stream().map(this::mapToDto).collect(Collectors.toList());
+            return ResponseEntity.ok(dtos);
+        } catch (DaneNieZnalesionoExeption e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (ForbiddenAccessException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+        }
     }
 }

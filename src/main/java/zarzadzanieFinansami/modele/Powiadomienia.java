@@ -1,6 +1,7 @@
 package zarzadzanieFinansami.modele;
 
 import jakarta.persistence.*;
+import zarzadzanieFinansami.modele.enumeracje.TypPowiadomieniaEnum;
 
 import java.time.LocalDateTime;
 
@@ -9,39 +10,40 @@ import java.time.LocalDateTime;
 public class Powiadomienia {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String wiadomosc;
     @Column(name = "wygenerowany_czas", nullable = false, updatable = false)
     private LocalDateTime wygenerowanyCzas;
     private boolean czyPrzeczytane = false;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uzytkownik_id")
     private Uzytkownik uzytkownik;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "typ_powiadomienia_id")
-    private TypPowiadomienia typPowiadomienia;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "typ_powiadomienia", length = 50)
+    private TypPowiadomieniaEnum typPowiadomienia;
 
     @PrePersist
     protected void onCreate() {
         this.wygenerowanyCzas = LocalDateTime.now();
     }
 
-    public Powiadomienia(String wiadomosc, boolean czyPrzeczytane, Uzytkownik uzytkownik, TypPowiadomienia typPowiadomienia) {
+    public Powiadomienia(String wiadomosc, boolean czyPrzeczytane, Uzytkownik uzytkownik, TypPowiadomieniaEnum typPowiadomienia) {
         this.wiadomosc = wiadomosc;
         this.czyPrzeczytane = czyPrzeczytane;
         this.uzytkownik = uzytkownik;
-        this.typPowiadomienia = typPowiadomienia;
+        this.typPowiadomienia = (typPowiadomienia != null) ? typPowiadomienia : TypPowiadomieniaEnum.WIADOMOSC_SYSTEMOWA;
     }
 
     public Powiadomienia() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -77,11 +79,11 @@ public class Powiadomienia {
         this.uzytkownik = uzytkownik;
     }
 
-    public TypPowiadomienia getTypPowiadomienia() {
+    public TypPowiadomieniaEnum getTypPowiadomienia() {
         return typPowiadomienia;
     }
 
-    public void setTypPowiadomienia(TypPowiadomienia typPowiadomienia) {
+    public void setTypPowiadomienia(TypPowiadomieniaEnum typPowiadomienia) {
         this.typPowiadomienia = typPowiadomienia;
     }
 

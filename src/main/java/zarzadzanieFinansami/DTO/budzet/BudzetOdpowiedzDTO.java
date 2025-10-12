@@ -1,5 +1,6 @@
 package zarzadzanieFinansami.DTO.budzet;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import zarzadzanieFinansami.modele.enumeracje.OkresowoscEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypRegulyBudzetowejEnum;
 
@@ -11,7 +12,9 @@ public class BudzetOdpowiedzDTO {
     private Long id;
     private String nazwa;
     private Integer uzytkownikId;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate dataPoczatkowa;
+    @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate dataKoncowa;
     private OkresowoscEnum okresowosc;
     private BigDecimal przewidywanyDochod;

@@ -50,11 +50,11 @@ public class Cel {
 
 
     // Relacje (pozostawiam jak były, ale warto przemyśleć CascadeTypes)
-    @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
-    private List<RaportOszczednosci> raportyOszczednosci = new ArrayList<>();
-
-    @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
-    private List<ZasadyOszczedzania> zasadyOszczedzania = new ArrayList<>();
+//    @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
+//    private List<RaportOszczednosci> raportyOszczednosci = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "cel", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
+//    private List<ZasadyOszczedzania> zasadyOszczedzania = new ArrayList<>();
 
     @OneToMany(mappedBy = "cel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ZasadyPowiadomien> zasadyPowiadomien = new ArrayList<>();
@@ -147,24 +147,24 @@ public class Cel {
     public void setStatus(CelStatusEnum status) {
         this.status = status;
     }
-    public
 
 
-     List<RaportOszczednosci> getRaportyOszczednosci() {
-        return raportyOszczednosci;
-    }
 
-    public void setRaportyOszczednosci(List<RaportOszczednosci> raportyOszczednosci) {
-        this.raportyOszczednosci = raportyOszczednosci;
-    }
-
-    public List<ZasadyOszczedzania> getZasadyOszczedzania() {
-        return zasadyOszczedzania;
-    }
-
-    public void setZasadyOszczedzania(List<ZasadyOszczedzania> zasadyOszczedzania) {
-        this.zasadyOszczedzania = zasadyOszczedzania;
-    }
+//    public  List<RaportOszczednosci> getRaportyOszczednosci() {
+//        return raportyOszczednosci;
+//    }
+//
+//    public void setRaportyOszczednosci(List<RaportOszczednosci> raportyOszczednosci) {
+//        this.raportyOszczednosci = raportyOszczednosci;
+//    }
+//
+//    public List<ZasadyOszczedzania> getZasadyOszczedzania() {
+//        return zasadyOszczedzania;
+//    }
+//
+//    public void setZasadyOszczedzania(List<ZasadyOszczedzania> zasadyOszczedzania) {
+//        this.zasadyOszczedzania = zasadyOszczedzania;
+//    }
 
     public List<ZasadyPowiadomien> getZasadyPowiadomien() {
         return zasadyPowiadomien;

@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.serwisy;
-
-public class RaportOszczednosciUsługa {
-}
+//package zarzadzanieFinansami.serwisy;
+//
+//public class RaportOszczednosciUsługa {
+//}

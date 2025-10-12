@@ -35,8 +35,8 @@ public class PozycjaBudzetu {
     private BigDecimal kwotaAlokowana;
 
     // Można dodać pole na rzeczywiste wydatki dla tej pozycji, aktualizowane na podstawie transakcji
-    // @Transient // lub @Column jeśli chcesz persystować, ale wymagałoby to aktualizacji
-    // private BigDecimal rzeczywisteWydatki;
+    @Transient // lub @Column jeśli chcesz persystować, ale wymagałoby to aktualizacji
+    private BigDecimal rzeczywisteWydatki;
 
 
     // Konstruktory, Gettery, Settery
@@ -89,5 +89,13 @@ public class PozycjaBudzetu {
 
     public void setKwotaAlokowana(BigDecimal kwotaAlokowana) {
         this.kwotaAlokowana = kwotaAlokowana;
+    }
+
+    public BigDecimal getRzeczywisteWydatki() {
+        return rzeczywisteWydatki;
+    }
+
+    public void setRzeczywisteWydatki(BigDecimal rzeczywisteWydatki) {
+        this.rzeczywisteWydatki = rzeczywisteWydatki;
     }
 }

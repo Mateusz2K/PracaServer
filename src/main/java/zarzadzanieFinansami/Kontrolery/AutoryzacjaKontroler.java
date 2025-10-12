@@ -25,9 +25,6 @@ public class AutoryzacjaKontroler {
 
     JwtUtil jwtUtil;
 
-    // wstrzyknąć UserDetailsService, jeśli potrzebuje dodatkowych informacji o użytkowniku
-    // @Autowired
-    // UserDetailsService userDetailsService;
 
     @Autowired
     public AutoryzacjaKontroler(AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
@@ -47,17 +44,10 @@ public class AutoryzacjaKontroler {
 
         // Wygeneruj token JWT
         String jwt = jwtUtil.generateJwtToken(authentication);
-
         // Pobierz szczegóły użytkownika
          UserDetails userDetails = (UserDetails) authentication.getPrincipal();
          String username = userDetails.getUsername();
-         // Prostszy sposób, jeśli UserDetails.getUsername() to email
-
         // Zwróć token w odpowiedzi
         return ResponseEntity.ok(new JwtOdpowiedzDTO(jwt, username));
     }
-
-    // dodać inne endpointy, np. /register, /refresh-token itp.
-    //  endpoint /register (jeśli go masz) również powinien być publicznie dostępny
-    // w konfiguracji Spring Security.
 }

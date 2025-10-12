@@ -3,6 +3,7 @@ package zarzadzanieFinansami.magazyn;
 import zarzadzanieFinansami.modele.Kategoria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import zarzadzanieFinansami.modele.Uzytkownik;
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +46,8 @@ public interface MagazynKategorii extends JpaRepository<Kategoria, Integer> {
 
     // Możesz też potrzebować znaleźć po typie transakcji dla użytkownika
     List<Kategoria> findByUzytkownikAndTypTransakcji(Uzytkownik uzytkownik, String typTransakcji); // <-- DODAJ (opcjonalne)
+
+    List<Kategoria> findByUzytkownikAndKategorieBudzet(Uzytkownik uzytkownik, KategorieBudzetEnum kategorieBudzet);
 
 
 }

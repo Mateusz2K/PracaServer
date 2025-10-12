@@ -21,6 +21,9 @@ public class CelWysylanieDTO {
     @DecimalMin(value = "0.01", message = "Kwota docelowa musi być większa niż 0.")
     private BigDecimal kwotaDocelowa;
 
+    @DecimalMin( value = "0.00", message = "Aktualna kwota nie może być mniejsza niż 0")
+    private BigDecimal aktualnaKwota; // Dodatkowe pole
+
     @JsonFormat(pattern = "dd.MM.yyyy")
     private LocalDate dataZakonczenia; // Może być opcjonalna
 
@@ -46,6 +49,13 @@ public class CelWysylanieDTO {
 
     public void setKwotaDocelowa(BigDecimal kwotaDocelowa) {
         this.kwotaDocelowa = kwotaDocelowa;
+    }
+    public BigDecimal getAktualnaKwota() {
+        return aktualnaKwota;
+    }
+
+    public void setAktualnaKwota(BigDecimal aktualnaKwota) {
+        this.aktualnaKwota = aktualnaKwota;
     }
 
     public LocalDate getDataZakonczenia() {

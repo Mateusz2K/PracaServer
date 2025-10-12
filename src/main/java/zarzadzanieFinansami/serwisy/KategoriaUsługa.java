@@ -7,6 +7,7 @@ import zarzadzanieFinansami.DTO.kategoria.KategoriaWysylanieDTO;
 import zarzadzanieFinansami.magazyn.MagazynKategorii;
 import zarzadzanieFinansami.modele.Kategoria;
 import zarzadzanieFinansami.modele.Uzytkownik; // Import
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 import zarzadzanieFinansami.wyjątki.DaneNieZnalesionoExeption;
 import zarzadzanieFinansami.wyjątki.DuplikatException;
 
@@ -34,6 +35,7 @@ public class KategoriaUsługa {
         Kategoria nowaKategoria = new Kategoria();
         nowaKategoria.setNazwa(dto.getNazwa());
         nowaKategoria.setTypTransakcji(dto.getTypTransakcji());
+        nowaKategoria.setKategorieBudzet(dto.getKategorieBudzetuEnum());
         nowaKategoria.setUzytkownik(currentUser); // <-- PRZYPISZ UŻYTKOWNIKA
         return magazynKategorii.save(nowaKategoria);
     }
@@ -63,6 +65,7 @@ public class KategoriaUsługa {
 
         kategoriaDoAktualizacji.setNazwa(dto.getNazwa());
         kategoriaDoAktualizacji.setTypTransakcji(dto.getTypTransakcji());
+        kategoriaDoAktualizacji.setKategorieBudzet(dto.getKategorieBudzetuEnum());
         // Użytkownik jest już ustawiony i nie powinien być zmieniany
         return magazynKategorii.save(kategoriaDoAktualizacji);
     }
@@ -80,4 +83,19 @@ public class KategoriaUsługa {
         }
         magazynKategorii.delete(kategoria);
     }
+
+    @Transactional(readOnly = true)
+    public List<Kategoria> pobierzKategoriePoKategoriiBudzetu(KategorieBudzetEnum kategorieBudzetEnum, Uzytkownik uzytkownik) {
+//        List<Kategoria> wszystkieKategorie = this.pobierzWszystkieKategorie(uzytkownik);
+//        List<Kategoria> wybraneKategorie = new ArrayList<>();
+//        for(Kategoria kategoria : wszystkieKategorie){
+//            if(kategoria.getKategorieBudzet().equals(kategorieEnum)){
+//                wybraneKategorie.add(kategoria);
+//            }
+//        }
+//        return wybraneKategorie;
+        return magazynKategorii.findByUzytkownikAndKategorieBudzet(uzytkownik, kategorieBudzetEnum);
+    }
+
+
 }

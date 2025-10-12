@@ -76,7 +76,7 @@ public class CelUsługa {
         Cel cel = new Cel();
         cel.setNazwaCelu(dto.getNazwaCelu());
         cel.setKwotaDocelowa(dto.getKwotaDocelowa());
-        cel.setAktualnaKwota(BigDecimal.ZERO); // Domyślnie 0
+        cel.setAktualnaKwota(dto.getAktualnaKwota() != null ? dto.getAktualnaKwota() : BigDecimal.ZERO); // Domyślnie 0
         cel.setDataRozpoczecia(LocalDate.now());
         cel.setDataZakonczenia(dto.getDataZakonczenia());
         cel.setOpis(dto.getOpis());
@@ -119,6 +119,7 @@ public class CelUsługa {
 
         cel.setNazwaCelu(dto.getNazwaCelu());
         cel.setKwotaDocelowa(dto.getKwotaDocelowa());
+        cel.setAktualnaKwota(dto.getAktualnaKwota() != null ? dto.getAktualnaKwota() : cel.getAktualnaKwota());
         cel.setDataZakonczenia(dto.getDataZakonczenia());
         cel.setOpis(dto.getOpis());
         // aktualnaKwota i dataRozpoczecia nie są tutaj aktualizowane, chyba że jest taka potrzeba biznesowa

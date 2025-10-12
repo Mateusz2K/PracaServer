@@ -35,10 +35,10 @@ public class Konto {
     @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Cel> cele;
     //@XzasadyOczcdzędzania
-    @OneToMany(mappedBy = "odbiorca", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ZasadyOszczedzania> zasadyOszczedzaniaOdbiorca;
-    @OneToMany(mappedBy = "nadawca", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ZasadyOszczedzania> zasadyOszczedzaniaNadawca;
+//    @OneToMany(mappedBy = "odbiorca", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ZasadyOszczedzania> zasadyOszczedzaniaOdbiorca;
+//    @OneToMany(mappedBy = "nadawca", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<ZasadyOszczedzania> zasadyOszczedzaniaNadawca;
     //zasadyPowiadomien
     @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ZasadyPowiadomien> zasadyPowiadomien;
@@ -46,8 +46,8 @@ public class Konto {
     @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Transakcja> transakcje;
     //historia Konta
-    @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<HistoriaKonta> historieKont;
+//    @OneToMany(mappedBy = "konto", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<HistoriaKonta> historieKont;
 
 
 
@@ -123,21 +123,21 @@ public class Konto {
         this.cele = cele;
     }
 
-    public List<ZasadyOszczedzania> getZasadyOszczedzaniaOdbiorca() {
-        return zasadyOszczedzaniaOdbiorca;
-    }
-
-    public void setZasadyOszczedzaniaOdbiorca(List<ZasadyOszczedzania> zasadyOszczedzaniaOdbiorca) {
-        this.zasadyOszczedzaniaOdbiorca = zasadyOszczedzaniaOdbiorca;
-    }
-
-    public List<ZasadyOszczedzania> getZasadyOszczedzaniaNadawca() {
-        return zasadyOszczedzaniaNadawca;
-    }
-
-    public void setZasadyOszczedzaniaNadawca(List<ZasadyOszczedzania> zasadyOszczedzaniaNadawca) {
-        this.zasadyOszczedzaniaNadawca = zasadyOszczedzaniaNadawca;
-    }
+//    public List<ZasadyOszczedzania> getZasadyOszczedzaniaOdbiorca() {
+//        return zasadyOszczedzaniaOdbiorca;
+//    }
+//
+//    public void setZasadyOszczedzaniaOdbiorca(List<ZasadyOszczedzania> zasadyOszczedzaniaOdbiorca) {
+//        this.zasadyOszczedzaniaOdbiorca = zasadyOszczedzaniaOdbiorca;
+//    }
+//
+//    public List<ZasadyOszczedzania> getZasadyOszczedzaniaNadawca() {
+//        return zasadyOszczedzaniaNadawca;
+//    }
+//
+//    public void setZasadyOszczedzaniaNadawca(List<ZasadyOszczedzania> zasadyOszczedzaniaNadawca) {
+//        this.zasadyOszczedzaniaNadawca = zasadyOszczedzaniaNadawca;
+//    }
 
     public List<ZasadyPowiadomien> getZasadyPowiadomien() {
         return zasadyPowiadomien;
@@ -156,13 +156,13 @@ public class Konto {
         this.transakcje = transakcje;
     }
 
-    public List<HistoriaKonta> getHistorieKont() {
-        return historieKont;
-    }
-
-    public void setHistorieKont(List<HistoriaKonta> historieKont) {
-        this.historieKont = historieKont;
-    }
+//    public List<HistoriaKonta> getHistorieKont() {
+//        return historieKont;
+//    }
+//
+//    public void setHistorieKont(List<HistoriaKonta> historieKont) {
+//        this.historieKont = historieKont;
+//    }
 
     @Override
     public String toString() {

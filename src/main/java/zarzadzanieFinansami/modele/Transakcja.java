@@ -30,8 +30,8 @@ public class Transakcja {
     private Konto konto;
 
     //historie Kont połączenie forgein
-    @OneToMany(mappedBy = "transakcja", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
-    private List<HistoriaKonta> historieKonta;
+//    @OneToMany(mappedBy = "transakcja", cascade = {CascadeType.DETACH,CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, orphanRemoval = false)
+//    private List<HistoriaKonta> historieKonta;
 
 
     public Transakcja(String opis, BigDecimal kwota, TypTransakcjiEnum typ, LocalDate data, Kategoria kategoria, Konto konto) {
@@ -102,11 +102,11 @@ public class Transakcja {
         this.konto = konto;
     }
 
-    public List<HistoriaKonta> getHistorieKonta() {
-        return historieKonta;
-    }
-
-    public void setHistorieKonta(List<HistoriaKonta> historieKonta) {
-        this.historieKonta = historieKonta;
-    }
+//    public List<HistoriaKonta> getHistorieKonta() {
+//        return historieKonta;
+//    }
+//
+//    public void setHistorieKonta(List<HistoriaKonta> historieKonta) {
+//        this.historieKonta = historieKonta;
+//    }
 }

@@ -1,4 +1,4 @@
-package zarzadzanieFinansami.serwisy;
-
-public class ZasadyOszczedzaniaUsługa {
-}
+//package zarzadzanieFinansami.serwisy;
+//
+//public class ZasadyOszczedzaniaUsługa {
+//}

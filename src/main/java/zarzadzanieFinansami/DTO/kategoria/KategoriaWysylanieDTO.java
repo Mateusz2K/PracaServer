@@ -2,6 +2,7 @@ package zarzadzanieFinansami.DTO.kategoria;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import zarzadzanieFinansami.modele.enumeracje.KategorieBudzetEnum;
 import zarzadzanieFinansami.modele.enumeracje.TypTransakcjiEnum;
 
 public class KategoriaWysylanieDTO {
@@ -11,6 +12,8 @@ public class KategoriaWysylanieDTO {
 
     @NotNull(message = "Typ transakcji dla kategorii jest wymagany (KOSZT/PRZYCHÓD).")
     private TypTransakcjiEnum typTransakcji;
+
+    private KategorieBudzetEnum kategorieBudzetuEnum;
 
     // Gettery i Settery
     public String getNazwa() {
@@ -25,7 +28,8 @@ public class KategoriaWysylanieDTO {
         return typTransakcji;
     }
 
-    public void setTypTransakcji(TypTransakcjiEnum typTransakcji) {
-        this.typTransakcji = typTransakcji;
+    public KategorieBudzetEnum getKategorieBudzetuEnum() {
+        return kategorieBudzetuEnum;
     }
+
 }

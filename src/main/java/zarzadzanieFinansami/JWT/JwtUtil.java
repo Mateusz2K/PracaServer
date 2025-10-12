@@ -36,7 +36,6 @@ public class JwtUtil {
     @PostConstruct
     public void init() {
         boolean useGeneratedKey = false;
-
         if (jwtSecretStringFromProperties != null && !jwtSecretStringFromProperties.trim().isEmpty()) {
             byte[] keyBytes = jwtSecretStringFromProperties.getBytes(StandardCharsets.UTF_8);
             // Dodatkowe logowanie długości klucza w bajtach

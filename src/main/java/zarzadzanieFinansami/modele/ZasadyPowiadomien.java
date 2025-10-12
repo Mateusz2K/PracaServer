@@ -3,28 +3,32 @@ package zarzadzanieFinansami.modele;
 import jakarta.persistence.*;
 import zarzadzanieFinansami.modele.enumeracje.RegulaEnum;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "zasady_powiadomien")
 public class ZasadyPowiadomien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Enumerated(EnumType.STRING)
     private RegulaEnum regula;
-    private double wartoscLimit;
+
+    @Column(precision = 10, scale = 2)
+    private BigDecimal wartoscLimit;
     private boolean czyAktywna;
 
     @JoinColumn(name = "uzytkownik_id", nullable = false)
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Uzytkownik uzytkownik;
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "konto_id", nullable = false)
     private Konto konto;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cel_id")
     private Cel cel;
 
-    public ZasadyPowiadomien(RegulaEnum regula, double wartoscLimit, boolean czyAktywna, Uzytkownik uzytkownik, Konto konto, Cel cel) {
+    public ZasadyPowiadomien(RegulaEnum regula, BigDecimal wartoscLimit, boolean czyAktywna, Uzytkownik uzytkownik, Konto konto, Cel cel) {
         this.regula = regula;
         this.wartoscLimit = wartoscLimit;
         this.czyAktywna = czyAktywna;
@@ -36,11 +40,11 @@ public class ZasadyPowiadomien {
     public ZasadyPowiadomien() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -52,11 +56,11 @@ public class ZasadyPowiadomien {
         this.regula = regula;
     }
 
-    public double getWartoscLimit() {
+    public BigDecimal getWartoscLimit() {
         return wartoscLimit;
     }
 
-    public void setWartoscLimit(double wartoscLimit) {
+    public void setWartoscLimit(BigDecimal wartoscLimit) {
         this.wartoscLimit = wartoscLimit;
     }
 
